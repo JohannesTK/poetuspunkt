@@ -1,0 +1,1520 @@
+<!doctype html><html lang="et"><head><meta charset="utf-8"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<title>Põetuspunkt Pärnumaa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/* Layout: sticky command bar over a 1240px work column. Overview = KPI strip + paired panels; patient = identity header + tabbed record. */
+:root{
+  --bg:#F1F4F0; --surface:#FFFFFF; --surface-2:#E7ECE6; --line:#D2DAD1; --line-2:#B9C4B8;
+  --fg:#16201A; --fg-2:#435049; --muted:#69766E;
+  --accent:#2C5A44; --accent-hover:#234937; --accent-ink:#FFFFFF; --accent-soft:#DCE8E0;
+  --t1:#C62828; --t2:#C98A00; --t3:#2E7D32; --t4:#2F5FA8;
+  --ok:#2E7D32; --warn:#B26A00; --crit:#C62828;
+  --shadow:0 1px 2px rgba(20,32,26,.06),0 10px 30px rgba(20,32,26,.10);
+  --f-display:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --r:8px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1310; --surface:#161C18; --surface-2:#1F2722; --line:#2A342E; --line-2:#3A4740;
+    --fg:#E3EAE5; --fg-2:#B0BCB4; --muted:#85928A;
+    --accent:#86BFA1; --accent-hover:#9DCDB3; --accent-ink:#0C1912; --accent-soft:#1E3227;
+    --t1:#EF5B57; --t2:#E7B23C; --t3:#5DB865; --t4:#719DE4;
+    --ok:#5DB865; --warn:#E9A23A; --crit:#EF5B57;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.45);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1310; --surface:#161C18; --surface-2:#1F2722; --line:#2A342E; --line-2:#3A4740;
+  --fg:#E3EAE5; --fg-2:#B0BCB4; --muted:#85928A;
+  --accent:#86BFA1; --accent-hover:#9DCDB3; --accent-ink:#0C1912; --accent-soft:#1E3227;
+  --t1:#EF5B57; --t2:#E7B23C; --t3:#5DB865; --t4:#719DE4;
+  --ok:#5DB865; --warn:#E9A23A; --crit:#EF5B57;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.45);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:16px/1.5 var(--f-body);-webkit-font-smoothing:antialiased}
+body.noscroll{overflow:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:40;background:var(--surface)}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;letter-spacing:.005em}
+button,input,select,textarea{font:inherit;color:inherit}
+.mono{font-family:var(--f-mono);font-size:.9em;font-variant-numeric:tabular-nums}
+.num{font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--surface);border-bottom:1px solid var(--line)}
+.top-in{max-width:1240px;margin:0 auto;display:flex;align-items:center;gap:20px;min-height:60px;padding-block:8px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;cursor:pointer;background:none;border:0;padding:0;text-align:left}
+.brand .mark{width:34px;height:34px;border-radius:8px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;flex:none}
+.brand b{display:block;font:700 19px/1.05 var(--f-display);letter-spacing:.01em}
+.brand small{display:block;font-size:12.5px;color:var(--muted);line-height:1.2}
+.nav{display:flex;gap:2px;background:var(--surface-2);border-radius:9px;padding:3px}
+.nav button{border:0;background:none;padding:6px 14px;border-radius:7px;font-weight:600;font-size:15px;color:var(--fg-2);cursor:pointer;display:flex;gap:6px;align-items:center}
+.nav button[aria-current="page"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.nav .count{font:500 12px var(--f-mono);color:var(--muted)}
+.top-act{margin-left:auto;display:flex;align-items:center;gap:14px}
+.sync{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);white-space:nowrap}
+.sync i{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.sync.ok i{background:var(--ok)} .sync.err i{background:var(--crit)} .sync.wait i{background:var(--warn)}
+@media (max-width:760px){
+  .top-in{flex-wrap:wrap;gap:8px 12px}
+  .nav{order:3;width:100%}
+  .brand{flex:1 1 0;min-width:0}
+  .brand > span:last-child{min-width:0}
+  .brand b,.brand small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .top-act{gap:10px}
+  .nav button{flex:1;justify-content:center}
+  .sync span{display:none}
+  .btn-new .long{display:none}
+}
+
+/* layout */
+.wrap{max-width:1240px;margin:0 auto;padding-block:24px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.page-h{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.page-h h1{font-size:32px;font-weight:700;line-height:1.05}
+.page-h .sub{color:var(--muted);font-size:14px;margin-top:4px}
+.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px}
+.s12{grid-column:span 12}.s8{grid-column:span 8}.s7{grid-column:span 7}.s6{grid-column:span 6}.s5{grid-column:span 5}.s4{grid-column:span 4}
+@media (max-width:980px){.s8,.s7,.s6,.s5{grid-column:span 12}.s4{grid-column:span 6}}
+@media (max-width:640px){.s4{grid-column:span 12}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;min-width:0}
+.panel-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;min-height:30px}
+.panel-h h3,.lbl{font:600 13px/1.2 var(--f-body);text-transform:uppercase;letter-spacing:.07em;color:var(--fg-2)}
+.panel-h .note{font-size:13px;color:var(--muted)}
+.empty{color:var(--muted);font-size:15px;padding:6px 0}
+.empty-big{text-align:center;padding:48px 16px;color:var(--fg-2)}
+.empty-big h2{font-size:24px;margin-bottom:6px;color:var(--fg)}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line-2);background:var(--surface);color:var(--fg);border-radius:7px;padding:7px 13px;font-weight:600;font-size:15px;cursor:pointer;line-height:1.2;white-space:nowrap;text-decoration:none}
+.btn:hover{background:var(--surface-2)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn-primary:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
+.btn-ghost{border-color:transparent;background:transparent;color:var(--fg-2)}
+.btn-ghost:hover{background:var(--surface-2)}
+.btn-sm{padding:4px 10px;font-size:14px;border-radius:6px}
+.btn-danger{color:var(--crit);border-color:color-mix(in srgb,var(--crit) 45%,var(--line))}
+.btn-danger.armed,.btn-danger:hover{background:var(--crit);color:var(--bg);border-color:var(--crit)}
+.btn svg{width:16px;height:16px;flex:none}
+.icon-btn{border:0;background:none;width:36px;height:36px;border-radius:8px;cursor:pointer;color:var(--fg-2);font-size:24px;line-height:1;display:grid;place-items:center}
+.icon-btn:hover{background:var(--surface-2)}
+.link{background:none;border:0;padding:0;color:var(--accent);font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-size:inherit}
+body.ro .w{display:none!important}
+
+/* chips */
+.chip{display:inline-flex;align-items:center;gap:6px;padding:1px 9px;border-radius:999px;font:600 13px/20px var(--f-body);background:var(--surface-2);color:var(--fg-2);white-space:nowrap;vertical-align:middle}
+.chip .dot{width:8px;height:8px;border-radius:50%;background:var(--c,currentColor);flex:none}
+.chip.c{background:color-mix(in srgb,var(--c) 15%,var(--surface));color:var(--fg)}
+.T1{--c:var(--t1)}.T2{--c:var(--t2)}.T3{--c:var(--t3)}.T4{--c:var(--t4)}
+.st-ravil{--c:var(--accent)}.st-jalgimisel{--c:var(--t4)}.st-evakueeritud{--c:var(--muted)}.st-valja{--c:var(--muted)}.st-surnud{--c:var(--fg)}
+.chip.ex{background:transparent;border:1px dashed var(--line-2);color:var(--muted);font-weight:600;font-size:12px;line-height:18px}
+.chip.crit{--c:var(--crit)}.chip.warn{--c:var(--warn)}.chip.ok{--c:var(--ok)}
+.news{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:24px;padding:0 6px;border-radius:6px;font:600 13px var(--f-mono);background:var(--surface-2);color:var(--fg-2)}
+.news.high{background:var(--crit);color:var(--bg)}
+.news.med{background:var(--warn);color:var(--bg)}
+.news.lowmed{background:color-mix(in srgb,var(--warn) 22%,var(--surface));color:var(--fg)}
+.news.low{background:color-mix(in srgb,var(--ok) 16%,var(--surface));color:var(--fg)}
+
+/* banner */
+.banner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 14px;border-radius:var(--r);border:1px dashed var(--line-2);background:var(--surface);margin-bottom:16px;font-size:15px;color:var(--fg-2)}
+.banner .sp{flex:1}
+.allergy{display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-radius:var(--r);background:color-mix(in srgb,var(--crit) 12%,var(--surface));border:1px solid color-mix(in srgb,var(--crit) 40%,var(--line));color:var(--fg);margin-top:14px;font-size:15px}
+.allergy b{color:var(--crit);text-transform:uppercase;letter-spacing:.06em;font-size:13px;padding-top:2px;white-space:nowrap}
+
+/* KPI strip */
+.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin-bottom:16px}
+.kpi{padding:14px 18px 16px;border-left:1px solid var(--line);min-width:0}
+.kpi:first-child{border-left:0}
+.kpi .lbl{font-size:12px;display:flex;justify-content:space-between;gap:6px;align-items:center}
+.kpi .v{font:700 40px/1 var(--f-display);margin-top:8px;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.kpi .v small{font-size:20px;font-weight:600;color:var(--muted);margin-left:2px}
+.kpi .d{font-size:13px;color:var(--muted);margin-top:6px}
+.kpi.alert .v{color:var(--crit)}
+.meter{height:6px;border-radius:3px;background:var(--surface-2);margin-top:10px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--accent);border-radius:3px}
+@media (max-width:1100px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.kpi:nth-child(4){border-left:0}.kpi:nth-child(n+4){border-top:1px solid var(--line)}}
+@media (max-width:520px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.kpi{border-left:1px solid var(--line)!important;border-top:1px solid var(--line)}.kpi:nth-child(odd){border-left:0!important}.kpi:nth-child(-n+2){border-top:0}.kpi .v{font-size:34px}}
+
+/* attention list */
+.att{display:flex;flex-direction:column}
+.att-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:9px 4px;border-top:1px solid var(--line);cursor:pointer;background:none;border-left:0;border-right:0;border-bottom:0;text-align:left;width:100%}
+.att-row:first-child{border-top:0}
+.att-row:hover{background:var(--surface-2)}
+.sev{width:10px;height:10px;border-radius:2px;background:var(--c)}
+.sev.crit{--c:var(--crit)}.sev.warn{--c:var(--warn)}.sev.info{--c:var(--t4)}
+.att-row .who{font-weight:600}
+.att-row .why{color:var(--fg-2);font-size:14.5px}
+.att-row .when{font-size:13px;color:var(--muted);white-space:nowrap}
+
+/* bars */
+.hb{display:flex;flex-direction:column;gap:9px}
+.hb-row{display:grid;grid-template-columns:minmax(0,42%) minmax(0,1fr) 34px;gap:10px;align-items:center;font-size:14.5px}
+.hb-l{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--fg-2)}
+.hb-l .mono{color:var(--fg)}
+.hb-track{height:12px;background:var(--surface-2);border-radius:3px;overflow:hidden}
+.hb-fill{display:block;height:100%;background:var(--c,var(--accent));border-radius:0 4px 4px 0;min-width:0}
+.hb-v{text-align:right;font:500 14px var(--f-mono);color:var(--fg)}
+.cc{--h:170px}
+.cc-plot{position:relative;height:var(--h);margin-left:26px}
+.cc-gl{position:absolute;left:0;right:0;border-top:1px solid var(--line);height:0}
+.cc-gl span{position:absolute;left:-26px;top:-9px;width:20px;text-align:right;font:500 11px var(--f-mono);color:var(--muted)}
+.cc-bars{position:absolute;inset:0;display:flex;align-items:flex-end;gap:4px}
+.cc-col{flex:1;height:100%;display:flex;align-items:flex-end;position:relative;outline:none;border-radius:4px}
+.cc-col:hover,.cc-col:focus-visible{background:color-mix(in srgb,var(--accent) 8%,transparent)}
+.cc-bar{width:100%;background:var(--accent);border-radius:4px 4px 0 0;min-height:0}
+.cc-col.today .cc-bar{background:var(--accent-hover)}
+.cc-col[data-tip]:hover::after,.cc-col[data-tip]:focus-visible::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--fg);color:var(--bg);font-size:12.5px;padding:4px 8px;border-radius:5px;white-space:nowrap;z-index:5;pointer-events:none}
+.cc-col:first-child[data-tip]::after{left:0;transform:none}
+.cc-col:last-child[data-tip]::after{left:auto;right:0;transform:none}
+.cc-x{display:flex;gap:4px;margin-left:26px;margin-top:6px}
+.cc-x span{flex:1;text-align:center;font:500 11px var(--f-mono);color:var(--muted);white-space:nowrap;overflow:visible}
+.demo{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:14px}
+.demo div{min-width:0}
+.demo .big{font:700 28px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.demo .small{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* patient list */
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.search{position:relative;flex:1 1 260px;min-width:0}
+.search input{width:100%;padding:9px 12px 9px 36px;border:1px solid var(--line-2);border-radius:8px;background:var(--surface)}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:var(--muted)}
+.seg{display:inline-flex;background:var(--surface-2);border-radius:8px;padding:3px}
+.seg button{border:0;background:none;padding:6px 12px;border-radius:6px;font-weight:600;font-size:14px;color:var(--fg-2);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.sel{padding:8px 10px;border:1px solid var(--line-2);border-radius:8px;background:var(--surface)}
+.plist{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.prow{display:grid;grid-template-columns:minmax(0,2.2fr) 112px 132px 56px minmax(0,2fr) 64px 118px;gap:14px;align-items:center;padding:11px 16px;border-top:1px solid var(--line);cursor:pointer;width:100%;text-align:left;background:none;border-left:0;border-right:0;border-bottom:0}
+.prow:hover{background:var(--surface-2)}
+.prow.head{cursor:default;border-top:0;background:var(--surface-2);font:600 12px var(--f-body);text-transform:uppercase;letter-spacing:.07em;color:var(--fg-2);padding-block:8px}
+.prow .nm{font-weight:700;font-size:16px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.prow .id{font-size:13.5px;color:var(--muted)}
+.prow .dx{font-size:14.5px;color:var(--fg-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prow .ar{font-size:13.5px;color:var(--fg-2)}
+.flag{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--crit);border:1px solid color-mix(in srgb,var(--crit) 45%,transparent);border-radius:4px;padding:0 5px;line-height:17px}
+.hide-d{display:none}
+@media (max-width:900px){
+  .prow.head{display:none}
+  .prow{grid-template-columns:minmax(0,1fr) auto;gap:6px 10px;padding:13px 14px}
+  .prow > .c-name{grid-column:1/2}
+  .prow > .c-news{grid-column:2/3;grid-row:1;justify-self:end}
+  .prow > .c-chips{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap}
+  .prow > .c-dx{grid-column:1/-1}
+  .prow > .c-ar{grid-column:1/-1}
+  .prow > .c-tri,.prow > .c-st,.prow > .c-bed{display:none}
+  .hide-d{display:flex}
+}
+
+/* patient */
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--fg-2);font-weight:600;font-size:14.5px;background:none;border:0;padding:0;cursor:pointer;margin-bottom:12px}
+.back:hover{color:var(--fg)}
+.pt-top{display:flex;gap:16px 24px;justify-content:space-between;align-items:flex-end;flex-wrap:wrap}
+.pt-top h1{font-size:36px;font-weight:700;line-height:1.02;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pt-meta{display:flex;gap:6px 14px;flex-wrap:wrap;color:var(--fg-2);font-size:15px;margin-top:8px;align-items:center}
+.pt-meta .sep{width:4px;height:4px;border-radius:50%;background:var(--line-2)}
+.pt-ctl{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.pt-ctl label{display:flex;flex-direction:column;gap:3px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.pt-ctl select{padding:7px 10px;border:1px solid var(--line-2);border-radius:7px;background:var(--surface);font-size:15px;text-transform:none;letter-spacing:0;font-weight:600;color:var(--fg)}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin:20px 0 18px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{border:0;background:none;padding:10px 14px;font-weight:600;font-size:15px;color:var(--fg-2);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px;white-space:nowrap;display:flex;gap:6px;align-items:center}
+.tabs button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent)}
+.tabs .n{font:500 12px var(--f-mono);color:var(--muted)}
+.dl{display:grid;grid-template-columns:minmax(120px,38%) minmax(0,1fr);gap:8px 14px;margin:0;font-size:15px}
+.dl dt{color:var(--muted)}
+.dl dd{margin:0;min-width:0;overflow-wrap:anywhere;white-space:pre-wrap}
+.dx-row{display:flex;gap:10px;align-items:baseline;padding:8px 0;border-top:1px solid var(--line);cursor:pointer;width:100%;background:none;border-left:0;border-right:0;border-bottom:0;text-align:left;font-size:15px}
+.dx-row:first-child{border-top:0}
+.dx-row .code{font:500 14px var(--f-mono);min-width:56px;color:var(--fg)}
+.dx-row .pri{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--accent)}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:8px}
+.vbox{border:1px solid var(--line);border-radius:7px;padding:8px 10px}
+.vbox .k{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.vbox .val{font:500 20px/1.2 var(--f-mono);margin-top:2px;font-variant-numeric:tabular-nums}
+.vbox .val small{font-size:12px;color:var(--muted);margin-left:2px}
+.vbox.warn{border-color:color-mix(in srgb,var(--warn) 60%,var(--line));background:color-mix(in srgb,var(--warn) 9%,var(--surface))}
+.vbox.crit{border-color:color-mix(in srgb,var(--crit) 60%,var(--line));background:color-mix(in srgb,var(--crit) 10%,var(--surface))}
+.item{display:flex;gap:12px;justify-content:space-between;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line);flex-wrap:wrap}
+.item:first-child{border-top:0;padding-top:4px}
+.item .main{min-width:0;flex:1 1 280px}
+.item .ttl{font-weight:700;font-size:16px}
+.item .sub{font-size:14px;color:var(--fg-2);margin-top:2px}
+.item .acts{display:flex;gap:6px;flex-wrap:wrap}
+.item details{margin-top:6px;font-size:14px}
+.item summary{cursor:pointer;color:var(--fg-2);font-weight:600}
+.item details ul{margin:6px 0 0;padding-left:18px;color:var(--fg-2)}
+.item.off{opacity:.72}
+.ttype{font:600 12px/18px var(--f-body);text-transform:uppercase;letter-spacing:.06em;color:var(--fg-2);background:var(--surface-2);border-radius:4px;padding:0 6px;margin-right:6px;white-space:nowrap}
+.note-e{padding:12px 0;border-top:1px solid var(--line)}
+.note-e:first-child{border-top:0}
+.note-e .h{display:flex;gap:10px;font-size:13.5px;color:var(--muted);align-items:center}
+.note-e .h .sp{flex:1}
+.note-e p{margin:4px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.composer textarea{width:100%;min-height:84px;padding:10px 12px;border:1px solid var(--line-2);border-radius:8px;background:var(--surface);resize:vertical}
+.composer .row{display:flex;justify-content:flex-end;margin-top:8px;gap:8px;align-items:center}
+.tscroll{overflow-x:auto;margin:0 -18px;padding:0 18px}
+table.vt{border-collapse:collapse;width:100%;font-size:14.5px;min-width:760px}
+.vt th{font:600 12px var(--f-body);text-transform:uppercase;letter-spacing:.06em;color:var(--fg-2);text-align:left;padding:8px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.vt td{padding:8px 8px;border-bottom:1px solid var(--line);font-family:var(--f-mono);font-size:13.5px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.vt td.txt{font-family:var(--f-body);font-size:14px;white-space:normal;color:var(--fg-2)}
+.vt tr.click{cursor:pointer}
+.vt tr.click:hover td{background:var(--surface-2)}
+.vt td.warn{color:var(--warn);font-weight:600}
+.vt td.crit{color:var(--crit);font-weight:600}
+.trends{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:6px}
+@media (max-width:760px){.trends{grid-template-columns:minmax(0,1fr)}}
+.trend .lbl{margin-bottom:4px;display:flex;justify-content:space-between}
+.trend svg{width:100%;height:auto;display:block;overflow:visible}
+.trend .band{fill:var(--accent-soft)}
+.trend .gl{stroke:var(--line);stroke-width:1}
+.trend .ln{fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.trend .pt{fill:var(--accent);stroke:var(--surface);stroke-width:2}
+.trend .pt.last{fill:var(--fg)}
+.trend text{fill:var(--muted);font:500 10px var(--f-mono)}
+.trend text.lv{fill:var(--fg);font-weight:600;font-size:11px}
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--muted);align-items:center}
+
+/* epikriis */
+.ep-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px}
+.ep-form .full{grid-column:1/-1}
+@media (max-width:700px){.ep-form{grid-template-columns:minmax(0,1fr)}}
+.ep-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.ep-bar .sp{flex:1}
+.save-st{font-size:13.5px;color:var(--muted)}
+.doc{max-width:760px;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:36px 40px;box-shadow:var(--shadow);margin:0 auto}
+@media (max-width:600px){.doc{padding:22px 18px}}
+.doc .dh{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:2px solid var(--fg);padding-bottom:12px;margin-bottom:16px}
+.doc .dh h2{font-size:30px;letter-spacing:.14em}
+.doc .dh .org{font-size:14px;color:var(--fg-2);text-align:right}
+@media (max-width:600px){.doc .dh .org{text-align:left}}
+.doc .pid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 18px;font-size:14.5px;margin-bottom:18px}
+@media (max-width:600px){.doc .pid{grid-template-columns:minmax(0,1fr)}}
+.doc .pid span{color:var(--muted)}
+.doc section{margin-bottom:14px}
+.doc section h4{font:600 12.5px var(--f-body);text-transform:uppercase;letter-spacing:.08em;color:var(--fg-2);margin:0 0 3px}
+.doc section p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:15.5px}
+.doc .sig{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:12px;margin-top:20px;font-size:14.5px}
+
+/* forms */
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label,.ep-form label{font-size:13.5px;font-weight:600;color:var(--fg-2)}
+.field .req{color:var(--crit)}
+.field input,.field select,.field textarea,.ep-form textarea,.ep-form input,.ep-form select{width:100%;padding:8px 11px;border:1px solid var(--line-2);border-radius:7px;background:var(--surface);font-size:16px;min-width:0}
+.field textarea,.ep-form textarea{resize:vertical;line-height:1.45}
+.field input:focus,.field select:focus,.field textarea:focus,.ep-form textarea:focus,.ep-form input:focus,.ep-form select:focus{outline:2px solid var(--accent);outline-offset:0;border-color:var(--accent)}
+.ep-form textarea[readonly]{background:var(--surface-2)}
+.hint{font-size:12.5px;color:var(--muted)}
+.hint.bad{color:var(--crit)} .hint.good{color:var(--ok)}
+.fgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.fgrid .full{grid-column:1/-1}
+@media (max-width:520px){.fgrid{grid-template-columns:minmax(0,1fr)}}
+.chk{display:flex;gap:8px;align-items:center;font-size:15px;align-self:end;padding-bottom:8px}
+.chk input{width:18px;height:18px;accent-color:var(--accent)}
+.fsec{grid-column:1/-1;font:600 12px var(--f-body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;margin-top:4px}
+.fsec:first-child{border-top:0;padding-top:0;margin-top:0}
+
+/* sheet */
+#sheet{position:fixed;inset:0;z-index:60}
+.sheet-bg{position:absolute;inset:0;background:rgba(10,16,12,.45)}
+.sheet-panel{position:absolute;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--surface);box-shadow:var(--shadow);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-right:env(safe-area-inset-right,0px)}
+.sheet-panel form{display:flex;flex-direction:column;min-height:0;flex:1}
+.sheet-h{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:18px 20px 12px;border-bottom:1px solid var(--line)}
+.sheet-h h2{font-size:24px}
+.sheet-h p{margin:2px 0 0;color:var(--muted);font-size:14px}
+.sheet-body{padding:16px 20px;overflow-y:auto;flex:1;min-height:0}
+.sheet-f{display:flex;gap:8px;align-items:center;padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);flex-wrap:wrap}
+.sheet-f .sp{flex:1}
+@media (max-width:600px){
+  .sheet-panel{top:auto;left:0;width:100%;max-height:92%;border-radius:14px 14px 0 0;padding-top:0;padding-left:env(safe-area-inset-left,0px)}
+}
+.sheet-body pre{white-space:pre-wrap;font:14px/1.5 var(--f-mono);background:var(--surface-2);padding:12px;border-radius:6px;user-select:all}
+
+/* toast */
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:80;display:flex;flex-direction:column;gap:8px;align-items:center;width:max-content;max-width:calc(100% - 32px)}
+.toast{background:var(--fg);color:var(--bg);padding:10px 14px;border-radius:9px;font-size:15px;box-shadow:var(--shadow);display:flex;gap:14px;align-items:center}
+.toast.err{background:var(--crit);color:var(--bg)}
+.toast button{background:none;border:0;color:inherit;font-weight:700;text-decoration:underline;cursor:pointer;padding:0}
+</style>
+<style>
+.menu{position:relative}
+.menu > summary{list-style:none;cursor:pointer;width:36px;height:36px;border-radius:8px;display:grid;place-items:center;color:var(--fg-2)}
+.menu > summary::-webkit-details-marker{display:none}
+.menu > summary:hover,.menu[open] > summary{background:var(--surface-2)}
+.menu > summary svg{width:20px;height:20px}
+.menu-pop{position:absolute;right:0;top:calc(100% + 6px);z-index:50;min-width:250px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:6px;display:flex;flex-direction:column}
+.menu-pop button{border:0;background:none;text-align:left;padding:9px 10px;border-radius:6px;font-size:15px;cursor:pointer;color:var(--fg)}
+.menu-pop button:hover{background:var(--surface-2)}
+.menu-pop .info{font-size:12.5px;color:var(--muted);padding:6px 10px 4px;border-top:1px solid var(--line);margin-top:4px;line-height:1.4}
+</style>
+</head><body>
+
+<datalist id="dl-meds"></datalist>
+<datalist id="dl-freq"></datalist>
+<datalist id="dl-from"></datalist>
+
+<header class="top">
+  <div class="top-in">
+    <button class="brand" data-act="nav" data-to="ulevaade" aria-label="Ülevaade">
+      <span class="mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2.5-6 4 12 2.5-6H21"/></svg></span>
+      <span><b>Põetuspunkt Pärnumaa</b><small>Kaitseliit · patsiendiregister</small></span>
+    </button>
+    <nav class="nav" aria-label="Vaated">
+      <button data-act="nav" data-to="ulevaade" id="nav-ulevaade">Ülevaade</button>
+      <button data-act="nav" data-to="patsiendid" id="nav-patsiendid">Patsiendid <span class="count" id="nav-count"></span></button>
+    </nav>
+    <div class="top-act">
+      <span class="sync wait" id="sync"><i></i><span>Ühendan…</span></span>
+      <details class="menu" id="local-menu"><summary aria-label="Andmed ja varukoopia" title="Andmed ja varukoopia"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></summary>
+        <div class="menu-pop"><button type="button" data-local="name">Sinu nimi…</button><button type="button" data-local="export">Ekspordi varukoopia (JSON)</button><button type="button" data-local="import">Impordi varukoopia…</button><div class="info">Andmed on salvestatud ainult selles brauseris ja seadmes. Tee regulaarselt varukoopia.</div></div></details>
+      <button class="btn btn-primary btn-new w" data-act="new-patient"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Uus<span class="long">&nbsp;patsient</span></button>
+    </div>
+  </div>
+</header>
+
+<main id="view" class="wrap"></main>
+<div id="sheet" hidden></div>
+<div id="toast" aria-live="polite"></div>
+
+<script>
+/* Local storage adapter: provides the db / user / downloads interface the app expects, stored in this browser only. */
+(() => {
+'use strict';
+const KEY = 'poetuspunkt:data:v1', NAME_KEY = 'poetuspunkt:name';
+const clone = o => o == null ? o : JSON.parse(JSON.stringify(o));
+function read(){
+  try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if(s && typeof s === 'object') return {patients:s.patients || {}, settings:s.settings || {}}; } catch { }
+  return {patients:{}, settings:{}};
+}
+let state = read();
+function write(){
+  try { localStorage.setItem(KEY, JSON.stringify(state)); }
+  catch(e){ state = read(); throw {code: e && e.name === 'QuotaExceededError' ? 'quota_exceeded' : 'unknown'}; }
+}
+function deepMerge(a, b){
+  const out = {...(a||{})};
+  for(const [k,v] of Object.entries(b)){
+    if(v && typeof v === 'object' && !Array.isArray(v) && out[k] && typeof out[k] === 'object' && !Array.isArray(out[k])) out[k] = deepMerge(out[k], v);
+    else out[k] = v;
+  }
+  return out;
+}
+const colSubs = new Map(), docSubs = new Map();
+function colSnap(name){ return {docs:Object.entries(state[name] || {}).map(([id, d]) => ({id, data:() => clone(d)}))}; }
+function docSnap(col, id){ const d = (state[col] || {})[id]; return {exists:!!d, data:() => clone(d), metadata:{fromCache:false}}; }
+function notify(){
+  setTimeout(() => {
+    for(const [name, fns] of colSubs) for(const fn of fns) fn(colSnap(name));
+    for(const [path, fns] of docSubs){ const [c, i] = path.split('/'); for(const fn of fns) fn(docSnap(c, i)); }
+  }, 0);
+}
+function sub(map, key, fn){ if(!map.has(key)) map.set(key, new Set()); map.get(key).add(fn); return () => map.get(key).delete(fn); }
+function docRef(path){
+  const [col, id] = path.split('/');
+  const run = f => new Promise((res, rej) => { try { f(); write(); notify(); res(); } catch(e){ rej(e); } });
+  return {
+    set: data => run(() => { state[col] = state[col] || {}; state[col][id] = clone(data); }),
+    update: data => run(() => { state[col] = state[col] || {}; state[col][id] = deepMerge(state[col][id], clone(data)); }),
+    delete: () => run(() => { if(state[col]) delete state[col][id]; }),
+    onSnapshot: fn => { const u = sub(docSubs, path, fn); setTimeout(() => fn(docSnap(col, id)), 0); return u; }
+  };
+}
+const db = {
+  doc: docRef,
+  collection: name => ({
+    doc: id => docRef(name + '/' + id),
+    onSnapshot: fn => { const u = sub(colSubs, name, fn); setTimeout(() => fn(colSnap(name)), 0); return u; }
+  })
+};
+window.addEventListener('storage', e => { if(e.key === KEY){ state = read(); notify(); } });
+
+function myName(){ try { return localStorage.getItem(NAME_KEY) || ''; } catch { return ''; } }
+const user = {
+  me: async () => ({id:null, name:myName()}),
+  can: async () => true,
+  isOwner: async () => true,
+  profiles: async () => ({})
+};
+function saveBlob(filename, data){
+  const type = /\.csv$/i.test(filename) ? 'text/csv;charset=utf-8' : /\.html?$/i.test(filename) ? 'text/html;charset=utf-8' : /\.json$/i.test(filename) ? 'application/json' : 'text/plain;charset=utf-8';
+  const url = URL.createObjectURL(new Blob([data], {type}));
+  const a = document.createElement('a'); a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+const downloads = { save: async ({filename, data}) => saveBlob(filename, data) };
+
+window.claude = { use: async cap => cap === 'db' ? db : cap === 'user' ? user : cap === 'downloads' ? downloads : null };
+
+/* header menu: name, backup export / import */
+const pad = n => String(n).padStart(2, '0');
+function stamp(){ const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-local]');
+  const menu = document.getElementById('local-menu');
+  if(menu && menu.open && !e.target.closest('#local-menu')) menu.open = false;
+  if(!t) return;
+  if(menu) menu.open = false;
+  const act = t.dataset.local;
+  if(act === 'name'){
+    const n = prompt('Sinu nimi (lisatakse sissekannetele, mõõtmistele ja epikriisile):', myName());
+    if(n === null) return;
+    try { localStorage.setItem(NAME_KEY, n.trim()); } catch { }
+    location.reload();
+  }
+  if(act === 'export'){
+    saveBlob(`poetuspunkt-varukoopia-${stamp()}.json`, JSON.stringify({app:'poetuspunkt', version:1, exportedAt:new Date().toISOString(), ...state}, null, 2));
+  }
+  if(act === 'import'){
+    const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'application/json,.json';
+    inp.onchange = async () => {
+      const f = inp.files && inp.files[0]; if(!f) return;
+      let data;
+      try { data = JSON.parse(await f.text()); } catch { alert('Faili ei saanud lugeda: see pole korrektne JSON.'); return; }
+      if(!data || typeof data.patients !== 'object' || Array.isArray(data.patients)){ alert('See fail ei ole Põetuspunkti varukoopia.'); return; }
+      const n = Object.keys(data.patients).length;
+      if(!confirm(`Varukoopias on ${n} patsienti. Kas asendada selle seadme andmed varukoopiaga? Praegused andmed kirjutatakse üle.`)) return;
+      const prev = state;
+      state = {patients:data.patients, settings:data.settings || {}};
+      try { write(); } catch { state = prev; alert('Importimine ebaõnnestus: brauseri salvestusruum on täis.'); return; }
+      notify();
+    };
+    inp.click();
+  }
+});
+})();
+</script>
+<script>
+(() => {
+'use strict';
+
+/* ---------- constants ---------- */
+const TRIAGE = {
+  T1:{short:'T1', name:'Kohene'}, T2:{short:'T2', name:'Edasilükatud'},
+  T3:{short:'T3', name:'Minimaalne'}, T4:{short:'T4', name:'Ootav'}
+};
+const STATUS = {
+  ravil:{label:'Ravil', active:true}, jalgimisel:{label:'Jälgimisel', active:true},
+  evakueeritud:{label:'Evakueeritud', active:false}, valja:{label:'Välja kirjutatud', active:false},
+  surnud:{label:'Surnud', active:false}
+};
+const ROUTES = [['p/o','p/o – suukaudne'],['i/v','i/v – veenisisene'],['i/m','i/m – lihasesisene'],['s/c','s/c – nahaalune'],['s/l','s/l – keelealune'],['inhal.','inhalatsioon'],['rekt.','rektaalne'],['paikne','paikne'],['muu','muu']];
+const FREQS = ['1× päevas','2× päevas','3× päevas','4× päevas','iga 4 h','iga 6 h','iga 8 h','vajadusel','ühekordselt','püsiinfusioon'];
+const MEDS = ['Paratsetamool','Ibuprofeen','Metamisool','Ketoprofeen','Morfiin','Tramadool','Amoksitsilliin','Amoksitsilliin + klavulaanhape','Tsefuroksiim','Klindamütsiin','Doksütsükliin','Asitromütsiin','NaCl 0,9%','Ringeri lahus','Glükoos 5%','Ondansetroon','Metoklopramiid','Omeprasool','Salbutamool','Prednisoloon','Deksametasoon','Tsetirisiin','Enoksapariin','Furosemiid','Nitroglütseriin','Atsetüülsalitsüülhape','Insuliin (lühitoimeline)','Metformiin','Amlodipiin','Traneksaamhape','Diasepaam','Loperamiid','Rehüdratsioonilahus'];
+const FROM = ['Kiirabi','Ise','Lähedased','Üksus','Evakuatsioonipunkt','Perearst','Sotsiaaltöötaja','Päästeamet','Politsei'];
+const TX_TYPES = ['Haavahooldus','Infusioonravi','Hapnikravi','Immobilisatsioon','Valuravi','Jälgimine','Uuring','Kateeter / dreen','Füsioteraapia','Hooldus ja toitmine','Evakuatsioon','Muu'];
+const TX_STATUS = [['plaanis','Plaanis'],['tehtud','Tehtud'],['katkestatud','Katkestatud']];
+const BLOOD = [['','—'],'0 Rh+','0 Rh−','A Rh+','A Rh−','B Rh+','B Rh−','AB Rh+','AB Rh−','Teadmata'];
+const AVPU = [['A','A – ärkvel, orienteeritud'],['C','C – uus segasus'],['V','V – reageerib häälele'],['P','P – reageerib valule'],['U','U – ei reageeri']];
+const DEST = [['','—'],'Koju','Perearsti jälgimisele','Haiglasse','Teise raviasutusse','Tagasi üksusesse','Muu'];
+const RISK = {high:{label:'kõrge', cls:'crit'}, med:{label:'keskmine', cls:'warn'}, lowmed:{label:'madal–keskmine', cls:'warn'}, low:{label:'madal', cls:'ok'}};
+const EP_FIELDS = [
+  ['complaint','Pöördumise põhjus ja anamnees'],
+  ['findings','Objektiivne leid saabumisel'],
+  ['diagnoses','Diagnoosid (RHK-10)'],
+  ['investigations','Tehtud uuringud'],
+  ['course','Ravikäik ja teostatud ravi'],
+  ['meds','Ravimid lahkumisel'],
+  ['condition','Seisund lahkumisel'],
+  ['recommendations','Soovitused ja edasine ravi']
+];
+const ORG = 'Põetuspunkt Pärnumaa · Kaitseliit';
+
+/* ---------- state ---------- */
+const S = {
+  view:'ulevaade', pid:null, tab:'kokkuvote',
+  patients:new Map(), overlay:{}, q:{}, settings:{capacity:12},
+  loaded:false, sync:'wait', db:null, user:null, me:{id:null,name:''}, canWrite:true, downloads:null,
+  names:{}, search:'', filter:'kohal', sort:'triaaz', noteDraft:{}, epDraft:{}, epTimer:{}, epSave:{}, open:new Set(), scrollTop:false, noAccess:false, denied:false, isOwner:false
+};
+
+/* ---------- helpers ---------- */
+const $ = (s, r=document) => r.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nowISO = () => new Date().toISOString();
+const newId = (p='') => p + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const pad = n => String(n).padStart(2,'0');
+const nf = new Intl.NumberFormat('et-EE',{maximumFractionDigits:1});
+const has = x => x !== null && x !== undefined && x !== '' && !Number.isNaN(x);
+const clone = o => o == null ? o : JSON.parse(JSON.stringify(o));
+function dt(iso){ const d = new Date(iso); return isNaN(d) ? null : d; }
+function fmtDay(s){ if(!s) return '—'; const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s); if(m) return `${m[3]}.${m[2]}.${m[1]}`; const d = dt(s); return d ? `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()}` : '—'; }
+function fmtDT(iso){ const d = dt(iso); return d ? `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}` : '—'; }
+function fmtShort(iso){ const d = dt(iso); return d ? `${pad(d.getDate())}.${pad(d.getMonth()+1)} ${pad(d.getHours())}:${pad(d.getMinutes())}` : '—'; }
+function rel(iso){
+  const d = dt(iso); if(!d) return '';
+  const m = Math.round((Date.now() - d.getTime())/60000);
+  if(m < 0){ const f = -m; if(f < 60) return `${f} min pärast`; if(f < 1440) return `${Math.round(f/60)} h pärast`; return `${Math.round(f/1440)} p pärast`; }
+  if(m < 1) return 'just nüüd'; if(m < 60) return `${m} min tagasi`;
+  const h = Math.floor(m/60); if(h < 24) return `${h} h tagasi`;
+  const dd = Math.floor(h/24); return dd === 1 ? 'eile' : `${dd} p tagasi`;
+}
+function toLocalInput(iso){ const d = iso ? dt(iso) : new Date(); if(!d) return ''; return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`; }
+function todayStr(){ const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+function ageOf(bd){
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(bd||''); if(!m) return null;
+  const n = new Date(); let a = n.getFullYear() - +m[1];
+  if(n.getMonth()+1 < +m[2] || (n.getMonth()+1 === +m[2] && n.getDate() < +m[3])) a--;
+  return a;
+}
+function parseIK(code){
+  code = String(code||'').trim(); if(!/^\d{11}$/.test(code)) return null;
+  const d = code.split('').map(Number);
+  const w1 = [1,2,3,4,5,6,7,8,9,1], w2 = [3,4,5,6,7,8,9,1,2,3];
+  let s = w1.reduce((a,w,i) => a + w*d[i], 0) % 11;
+  if(s === 10){ s = w2.reduce((a,w,i) => a + w*d[i], 0) % 11; if(s === 10) s = 0; }
+  if(s !== d[10] || d[0] < 1 || d[0] > 8) return {valid:false};
+  const y = [1800,1800,1900,1900,2000,2000,2100,2100][d[0]-1] + +code.slice(1,3);
+  const mm = code.slice(3,5), dd = code.slice(5,7);
+  const t = new Date(`${y}-${mm}-${dd}T00:00:00`);
+  if(isNaN(t) || t.getMonth()+1 !== +mm || t.getDate() !== +dd) return {valid:false};
+  return {valid:true, birthDate:`${y}-${mm}-${dd}`, sex: d[0] % 2 ? 'M' : 'N'};
+}
+function fullName(p){ return [p.firstName, p.lastName].filter(Boolean).join(' ') || 'Nimetu patsient'; }
+function isActive(p){ return (STATUS[p.status] || STATUS.ravil).active; }
+function hasAllergy(p){ const a = (p.allergies||'').trim(); return !!a && !/^(ei|puudu|pole|teadmata|-|—)/i.test(a); }
+function primaryDx(p){ const l = p.diagnoses || []; return l.find(x => x.primary) || l[0] || null; }
+function byAt(a, b){ return (b.at||'').localeCompare(a.at||''); }
+function lastVitals(p){ return [...(p.vitals||[])].sort(byAt)[0] || null; }
+function sysBP(bp){ const n = parseInt(String(bp||'').split('/')[0], 10); return Number.isNaN(n) ? null : n; }
+function news2(v){
+  if(!v) return null;
+  const p = {}; const sys = sysBP(v.bp);
+  if(has(v.rr)) p.rr = v.rr <= 8 ? 3 : v.rr <= 11 ? 1 : v.rr <= 20 ? 0 : v.rr <= 24 ? 2 : 3;
+  if(has(v.spo2)) p.spo2 = v.spo2 <= 91 ? 3 : v.spo2 <= 93 ? 2 : v.spo2 <= 95 ? 1 : 0;
+  p.o2 = v.o2 ? 2 : 0;
+  if(has(sys)) p.bp = sys <= 90 ? 3 : sys <= 100 ? 2 : sys <= 110 ? 1 : sys <= 219 ? 0 : 3;
+  if(has(v.hr)) p.hr = v.hr <= 40 ? 3 : v.hr <= 50 ? 1 : v.hr <= 90 ? 0 : v.hr <= 110 ? 1 : v.hr <= 130 ? 2 : 3;
+  p.avpu = v.avpu && v.avpu !== 'A' ? 3 : 0;
+  if(has(v.temp)) p.temp = v.temp <= 35 ? 3 : v.temp <= 36 ? 1 : v.temp <= 38 ? 0 : v.temp <= 39 ? 1 : 2;
+  const complete = ['rr','spo2','bp','hr','temp'].every(k => k in p);
+  const vals = Object.values(p); const total = vals.reduce((a,b) => a+b, 0);
+  const risk = total >= 7 ? 'high' : total >= 5 ? 'med' : vals.includes(3) ? 'lowmed' : 'low';
+  return {parts:p, total, complete, risk};
+}
+function sevOf(score){ return score >= 3 ? 'crit' : score >= 1 ? 'warn' : ''; }
+function newsBadge(v){
+  const n = news2(v); if(!n || !n.complete) return `<span class="news" title="NEWS2: andmed puudulikud">—</span>`;
+  return `<span class="news ${n.risk}" title="NEWS2 ${n.total} · ${RISK[n.risk].label} risk">${n.total}</span>`;
+}
+function who(e){
+  if(!e) return '';
+  if(e.byName) return e.byName;
+  if(e.by && S.names[e.by]) return S.names[e.by];
+  if(e.by && S.me.id && e.by === S.me.id) return S.me.name || 'Sina';
+  return e.byName || '';
+}
+function deepMerge(a, b){
+  const out = Array.isArray(a) ? a.slice() : {...(a||{})};
+  for(const [k,v] of Object.entries(b)){
+    if(v && typeof v === 'object' && !Array.isArray(v) && out[k] && typeof out[k] === 'object' && !Array.isArray(out[k])) out[k] = deepMerge(out[k], v);
+    else out[k] = v;
+  }
+  return out;
+}
+function opt(list, cur){
+  return list.map(o => { const [v,l] = Array.isArray(o) ? o : [o,o]; return `<option value="${esc(v)}"${String(cur??'') === String(v) ? ' selected' : ''}>${esc(l)}</option>`; }).join('');
+}
+const I = {
+  search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
+  back:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  dl:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14"/></svg>',
+  copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>'
+};
+
+/* ---------- data access ---------- */
+function allPatients(){
+  const m = new Map(S.patients);
+  for(const [id,o] of Object.entries(S.overlay)){ if(o === null) m.delete(id); else m.set(id, o); }
+  return [...m.values()];
+}
+function getP(id){ if(id in S.overlay) return S.overlay[id]; return S.patients.get(id) || null; }
+function errText(e){
+  const c = e && e.code;
+  if(c === 'invalid_argument'){ markDenied(); return S.isOwner ? 'Salvestamine keelduti: andmed on vigased.' : 'Sul pole muutmisõigust. Palu omanikul kutsuda sind toimetajaks (Editor).'; }
+  if(c === 'quota_exceeded') return 'Andmebaas on täis. Kustuta vanu patsiente ja proovi uuesti.';
+  if(c === 'resource_exhausted') return 'Liiga palju päringuid korraga. Oota hetk ja proovi uuesti.';
+  if(c === 'revoked') return 'Ligipääs andmetele võeti ära. Laadi leht uuesti.';
+  return 'Salvestamine ebaõnnestus. Kontrolli ühendust ja proovi uuesti.';
+}
+function noDb(){ toast('Andmebaas pole selles vaates saadaval. Ava leht claude.ai-s sisselogituna.', 'err'); }
+function patch(id, data, okMsg, undo){
+  if(!S.db){ noDb(); return Promise.resolve(false); }
+  const cur = getP(id); if(!cur) return Promise.resolve(false);
+  data.updatedAt = nowISO();
+  S.overlay[id] = deepMerge(cur, data);
+  render();
+  S.q[id] = (S.q[id] || Promise.resolve())
+    .then(() => S.db.doc('patients/' + id).update(data))
+    .then(() => { if(okMsg) toast(okMsg, '', undo); return true; })
+    .catch(e => { delete S.overlay[id]; render(); toast(errText(e), 'err'); return false; });
+  return S.q[id];
+}
+function editArr(id, key, fn, okMsg, undo){
+  const p = getP(id); if(!p) return;
+  const arr = clone(p[key] || []);
+  const res = fn(arr);
+  return patch(id, {[key]: res || arr}, okMsg, undo);
+}
+function createPatient(vals){
+  if(!S.db){ noDb(); return; }
+  const id = newId('p'); const t = nowISO();
+  const data = Object.assign({
+    firstName:'', lastName:'', idCode:'', birthDate:'', sex:'', phone:'', address:'', unit:'',
+    contactName:'', contactRelation:'', contactPhone:'', bloodType:'', allergies:'', chronic:'', homeMeds:'', personalNotes:'',
+    arrivedAt:t, arrivedFrom:'', bed:'', triage:'T3', status:'ravil', dischargedAt:'', complaint:'', plan:'',
+    diagnoses:[], meds:[], treatments:[], vitals:[], notes:[], epikriis:{}, example:false
+  }, vals, {createdAt:t, updatedAt:t, createdBy:S.me.id || null});
+  S.overlay[id] = Object.assign({}, data, {id});
+  S.db.collection('patients').doc(id).set(data)
+    .then(() => toast(`${fullName(data)} lisatud`))
+    .catch(e => { delete S.overlay[id]; toast(errText(e), 'err'); if(S.pid === id) go('patsiendid'); else render(); });
+  S.tab = 'kokkuvote';
+  go('p-' + id);
+}
+function deletePatient(id){
+  if(!S.db){ noDb(); return; }
+  const p = getP(id); const name = p ? fullName(p) : 'Patsient';
+  S.overlay[id] = null;
+  S.db.doc('patients/' + id).delete()
+    .then(() => toast(`${name} kustutatud`))
+    .catch(e => { delete S.overlay[id]; render(); toast(errText(e), 'err'); });
+  go('patsiendid');
+}
+
+/* ---------- routing ---------- */
+function route(){
+  const h = decodeURIComponent((location.hash || '').slice(1));
+  if(h.startsWith('p-')){ if(S.pid !== h.slice(2)) S.tab = 'kokkuvote'; S.view = 'patient'; S.pid = h.slice(2); }
+  else if(h === 'patsiendid'){ S.view = 'patsiendid'; S.pid = null; }
+  else { S.view = 'ulevaade'; S.pid = null; }
+}
+function go(token){
+  S.scrollTop = true;
+  if((location.hash || '').slice(1) !== token){ try { location.hash = token; } catch { } }
+  route(); render();
+}
+window.addEventListener('hashchange', () => { S.scrollTop = true; route(); render(); });
+
+/* ---------- toast ---------- */
+function toast(msg, kind='', undo){
+  const box = $('#toast'); const el = document.createElement('div');
+  el.className = 'toast' + (kind ? ' ' + kind : '');
+  const span = document.createElement('span'); span.textContent = msg; el.appendChild(span);
+  if(undo){ const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Võta tagasi'; b.onclick = () => { el.remove(); undo(); }; el.appendChild(b); }
+  box.appendChild(el);
+  setTimeout(() => el.remove(), undo ? 7000 : kind === 'err' ? 6500 : 3200);
+}
+
+/* ---------- sheet & forms ---------- */
+function fieldHTML(f, v){
+  if(f.type === 'section') return `<div class="fsec">${esc(f.label)}</div>`;
+  const id = 'f_' + f.k, req = f.required ? ' required' : '', ph = f.ph ? ` placeholder="${esc(f.ph)}"` : '';
+  if(f.type === 'checkbox') return `<label class="chk${f.full ? ' full' : ''}"><input type="checkbox" id="${id}" name="${f.k}"${v ? ' checked' : ''}><span>${esc(f.label)}</span></label>`;
+  let input;
+  switch(f.type){
+    case 'textarea': input = `<textarea id="${id}" name="${f.k}" rows="${f.rows||3}"${req}${ph}>${esc(v)}</textarea>`; break;
+    case 'select': input = `<select id="${id}" name="${f.k}"${req}>${opt(f.options, v)}</select>`; break;
+    case 'datetime': input = `<input type="datetime-local" id="${id}" name="${f.k}" value="${esc(v ? toLocalInput(v) : '')}"${req}>`; break;
+    case 'date': input = `<input type="date" id="${id}" name="${f.k}" value="${esc(v||'')}"${req}>`; break;
+    case 'number': input = `<input type="number" inputmode="decimal" id="${id}" name="${f.k}" value="${esc(v ?? '')}" step="${f.step||'any'}"${f.min != null ? ` min="${f.min}"` : ''}${f.max != null ? ` max="${f.max}"` : ''}${req}${ph}>`; break;
+    default: input = `<input type="text" id="${id}" name="${f.k}" value="${esc(v ?? '')}"${f.list ? ` list="${f.list}"` : ''}${f.mono ? ' class="mono"' : ''}${req}${ph} autocomplete="off">`;
+  }
+  return `<div class="field${f.full ? ' full' : ''}"><label for="${id}">${esc(f.label)}${f.required ? ' <span class="req">*</span>' : ''}</label>${input}${f.hint !== undefined ? `<div class="hint" id="${id}_hint">${esc(f.hint)}</div>` : ''}</div>`;
+}
+function collect(form, fields){
+  const o = {};
+  for(const f of fields){
+    if(f.type === 'section') continue;
+    const el = form.elements[f.k]; if(!el) continue;
+    if(f.type === 'checkbox') o[f.k] = el.checked;
+    else if(f.type === 'number') o[f.k] = el.value === '' ? null : Number(el.value);
+    else if(f.type === 'datetime') o[f.k] = el.value ? new Date(el.value).toISOString() : '';
+    else o[f.k] = el.value.trim();
+  }
+  return o;
+}
+function openSheet(html, mount){
+  const s = $('#sheet');
+  s.innerHTML = `<div class="sheet-bg" data-act="close-sheet"></div><div class="sheet-panel" role="dialog" aria-modal="true">${html}</div>`;
+  s.hidden = false; document.body.classList.add('noscroll');
+  if(mount) mount(s);
+  const first = s.querySelector('.sheet-body input:not([type=checkbox]), .sheet-body select, .sheet-body textarea');
+  if(first && window.matchMedia('(min-width: 601px)').matches) first.focus();
+}
+function closeSheet(){ const s = $('#sheet'); s.hidden = true; s.innerHTML = ''; document.body.classList.remove('noscroll'); }
+function openForm(o){
+  openSheet(`<form id="sheet-form" novalidate>
+    <header class="sheet-h"><div><h2>${esc(o.title)}</h2>${o.sub ? `<p>${esc(o.sub)}</p>` : ''}</div><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Sulge">×</button></header>
+    <div class="sheet-body"><div class="fgrid">${o.fields.map(f => fieldHTML(f, o.values ? o.values[f.k] : undefined)).join('')}</div></div>
+    <footer class="sheet-f">${o.onDelete ? `<button type="button" class="btn btn-danger" id="sheet-del">${esc(o.deleteLabel || 'Kustuta')}</button>` : ''}<span class="sp"></span><button type="button" class="btn" data-act="close-sheet">Tühista</button><button type="submit" class="btn btn-primary">${esc(o.submitLabel || 'Salvesta')}</button></footer>
+  </form>`, s => {
+    const form = s.querySelector('form');
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const bad = [...form.elements].find(el => el.willValidate && !el.checkValidity());
+      if(bad){ bad.focus(); const h = bad.closest('.field'); if(h && !h.querySelector('.hint.bad')){ const d = document.createElement('div'); d.className = 'hint bad'; d.textContent = bad.validity.valueMissing ? 'Kohustuslik väli' : 'Kontrolli väärtust'; h.appendChild(d); } return; }
+      const vals = collect(form, o.fields);
+      if(o.onSubmit(vals) !== false) closeSheet();
+    });
+    if(o.onDelete){
+      const b = s.querySelector('#sheet-del');
+      b.addEventListener('click', () => {
+        if(b.dataset.armed){ closeSheet(); o.onDelete(); }
+        else { b.dataset.armed = '1'; b.classList.add('armed'); b.textContent = 'Kinnita: ' + (o.deleteLabel || 'Kustuta').toLowerCase(); setTimeout(() => { if(b.isConnected){ delete b.dataset.armed; b.classList.remove('armed'); b.textContent = o.deleteLabel || 'Kustuta'; } }, 4000); }
+      });
+    }
+    if(o.mount) o.mount(form);
+  });
+}
+function openConfirm({title, text, ok, danger, onOk}){
+  openSheet(`<div style="display:flex;flex-direction:column;flex:1;min-height:0">
+    <header class="sheet-h"><div><h2>${esc(title)}</h2></div><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Sulge">×</button></header>
+    <div class="sheet-body"><p style="margin:0">${esc(text)}</p></div>
+    <footer class="sheet-f"><span class="sp"></span><button type="button" class="btn" data-act="close-sheet">Tühista</button><button type="button" class="btn ${danger ? 'btn-danger armed' : 'btn-primary'}" id="sheet-ok">${esc(ok)}</button></footer></div>`,
+    s => s.querySelector('#sheet-ok').addEventListener('click', () => { closeSheet(); onOk(); }));
+}
+function ikHook(form){
+  const ik = form.elements.idCode; if(!ik) return;
+  const hint = form.querySelector('#f_idCode_hint');
+  const upd = () => {
+    const v = ik.value.trim(); const r = parseIK(v);
+    if(!v){ hint.className = 'hint'; hint.textContent = '11 numbrit — sünniaeg ja sugu täituvad ise'; return; }
+    if(!r){ hint.className = 'hint'; hint.textContent = `${v.replace(/\D/g,'').length}/11 numbrit`; return; }
+    if(!r.valid){ hint.className = 'hint bad'; hint.textContent = 'Kontrollnumber ei klapi — kontrolli isikukoodi'; return; }
+    hint.className = 'hint good'; hint.textContent = `Kehtiv · sündinud ${fmtDay(r.birthDate)}, ${r.sex === 'M' ? 'mees' : 'naine'}`;
+    if(form.elements.birthDate) form.elements.birthDate.value = r.birthDate;
+    if(form.elements.sex) form.elements.sex.value = r.sex;
+  };
+  ik.addEventListener('input', upd); if(ik.value) upd();
+}
+
+/* ---------- field sets ---------- */
+const F_PERSONAL = [
+  {type:'section', label:'Isik'},
+  {k:'firstName', label:'Eesnimi', required:true},
+  {k:'lastName', label:'Perekonnanimi', required:true},
+  {k:'idCode', label:'Isikukood', mono:true, hint:'11 numbrit — sünniaeg ja sugu täituvad ise'},
+  {k:'birthDate', label:'Sünniaeg', type:'date'},
+  {k:'sex', label:'Sugu', type:'select', options:[['','—'],['M','Mees'],['N','Naine']]},
+  {k:'bloodType', label:'Veregrupp', type:'select', options:BLOOD},
+  {k:'unit', label:'Üksus / organisatsioon', ph:'nt Tsiviilisik', full:true},
+  {type:'section', label:'Kontakt'},
+  {k:'phone', label:'Telefon'},
+  {k:'address', label:'Aadress'},
+  {k:'contactName', label:'Lähedase nimi'},
+  {k:'contactRelation', label:'Seos patsiendiga', ph:'nt abikaasa'},
+  {k:'contactPhone', label:'Lähedase telefon', full:true},
+  {type:'section', label:'Terviseandmed'},
+  {k:'allergies', label:'Allergiad', type:'textarea', rows:2, full:true, ph:'Kirjuta „Ei ole teada“, kui allergiaid pole'},
+  {k:'chronic', label:'Kroonilised haigused', type:'textarea', rows:2, full:true},
+  {k:'homeMeds', label:'Püsiravimid kodus', type:'textarea', rows:2, full:true},
+  {k:'personalNotes', label:'Märkused', type:'textarea', rows:2, full:true}
+];
+const F_ADMISSION = [
+  {k:'arrivedAt', label:'Saabumise aeg', type:'datetime', required:true},
+  {k:'arrivedFrom', label:'Saabus / toodi', list:'dl-from', ph:'nt Kiirabi'},
+  {k:'triage', label:'Triaaž', type:'select', options:Object.entries(TRIAGE).map(([k,t]) => [k, `${k} – ${t.name}`])},
+  {k:'bed', label:'Voodikoht', ph:'nt 4'},
+  {k:'complaint', label:'Pöördumise põhjus', type:'textarea', rows:3, full:true}
+];
+const F_NEW = [
+  {k:'firstName', label:'Eesnimi', required:true},
+  {k:'lastName', label:'Perekonnanimi', required:true},
+  {k:'idCode', label:'Isikukood', mono:true, hint:'11 numbrit — sünniaeg ja sugu täituvad ise'},
+  {k:'birthDate', label:'Sünniaeg', type:'date'},
+  {k:'sex', label:'Sugu', type:'select', options:[['','—'],['M','Mees'],['N','Naine']]},
+  {k:'triage', label:'Triaaž', type:'select', options:Object.entries(TRIAGE).map(([k,t]) => [k, `${k} – ${t.name}`])},
+  {k:'arrivedAt', label:'Saabumise aeg', type:'datetime', required:true},
+  {k:'bed', label:'Voodikoht', ph:'nt 4'},
+  {k:'arrivedFrom', label:'Saabus / toodi', list:'dl-from', ph:'nt Kiirabi', full:true},
+  {k:'complaint', label:'Pöördumise põhjus', type:'textarea', rows:3, full:true},
+  {k:'allergies', label:'Allergiad', type:'textarea', rows:2, full:true, ph:'Kirjuta „Ei ole teada“, kui allergiaid pole'}
+];
+const F_DX = [
+  {k:'code', label:'RHK-10 kood', mono:true, ph:'nt J18.9'},
+  {k:'primary', label:'Põhidiagnoos', type:'checkbox'},
+  {k:'text', label:'Diagnoos', required:true, full:true, ph:'nt Pneumoonia, täpsustamata'}
+];
+const F_MED = [
+  {k:'name', label:'Ravim', required:true, list:'dl-meds', full:true, ph:'Toimeaine või preparaat'},
+  {k:'dose', label:'Annus', required:true, ph:'nt 1 g'},
+  {k:'route', label:'Manustamisviis', type:'select', options:ROUTES},
+  {k:'freq', label:'Sagedus', list:'dl-freq', ph:'nt 3× päevas'},
+  {k:'prescriber', label:'Määras', ph:'Arsti nimi'},
+  {k:'start', label:'Algus', type:'date'},
+  {k:'end', label:'Lõpp', type:'date'},
+  {k:'note', label:'Märkus', type:'textarea', rows:2, full:true, ph:'nt maksimaalselt 4 g ööpäevas'}
+];
+const F_TX = [
+  {k:'type', label:'Liik', type:'select', options:TX_TYPES},
+  {k:'status', label:'Staatus', type:'select', options:TX_STATUS},
+  {k:'desc', label:'Kirjeldus', type:'textarea', rows:3, required:true, full:true},
+  {k:'at', label:'Aeg', type:'datetime', required:true},
+  {k:'byName', label:'Teostaja', ph:'Nimi'}
+];
+const F_VIT = [
+  {k:'at', label:'Mõõtmise aeg', type:'datetime', required:true, full:true},
+  {k:'bp', label:'Vererõhk (mmHg)', ph:'120/80', mono:true},
+  {k:'hr', label:'Pulss (x/min)', type:'number', min:0, max:300},
+  {k:'rr', label:'Hingamissagedus (x/min)', type:'number', min:0, max:80},
+  {k:'spo2', label:'SpO₂ (%)', type:'number', min:0, max:100},
+  {k:'temp', label:'Temperatuur (°C)', type:'number', min:25, max:45},
+  {k:'o2', label:'Saab lisahapnikku', type:'checkbox'},
+  {k:'avpu', label:'Teadvus (ACVPU)', type:'select', options:AVPU},
+  {k:'gcs', label:'GCS (3–15)', type:'number', min:3, max:15},
+  {k:'pain', label:'Valu (0–10)', type:'number', min:0, max:10},
+  {k:'glucose', label:'Veresuhkur (mmol/l)', type:'number', min:0, max:60},
+  {k:'note', label:'Märkus', full:true}
+];
+
+/* ---------- render ---------- */
+function render(){
+  const view = $('#view');
+  const ae = document.activeElement;
+  const keep = ae && ae.id && view.contains(ae) ? {id:ae.id, s:ae.selectionStart, e:ae.selectionEnd, st:ae.scrollTop} : null;
+  const y = window.scrollY;
+  let html;
+  try {
+    html = S.view === 'patient' ? viewPatient() : S.view === 'patsiendid' ? viewList() : viewOverview();
+  } catch(err){ console.error(err); html = `<div class="empty-big"><h2>Vaadet ei saanud kuvada</h2><p>${esc(err.message)}</p></div>`; }
+  view.innerHTML = (S.denied && !S.noAccess ? deniedBanner() : '') + html;
+  updateTop();
+  if(keep){ const el = document.getElementById(keep.id); if(el){ el.focus({preventScroll:true}); try { if(keep.s != null) el.setSelectionRange(keep.s, keep.e); } catch { } el.scrollTop = keep.st; } }
+  if(S.scrollTop){ window.scrollTo(0,0); S.scrollTop = false; } else if(Math.abs(window.scrollY - y) > 1) window.scrollTo(0, y);
+}
+function updateTop(){
+  const cur = S.view === 'patient' ? 'patsiendid' : S.view;
+  for(const v of ['ulevaade','patsiendid']){ const b = $('#nav-' + v); if(cur === v) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); }
+  const n = allPatients().filter(isActive).length;
+  $('#nav-count').textContent = S.loaded ? n : '';
+  const sy = $('#sync');
+  const map = {ok:['ok','Salvestatud seadmes'], wait:['wait','Ühendan…'], err:['err','Ühendus katkes'], none:['err','Andmebaas puudub'], ro:['ok','Ainult lugemiseks'], noaccess:['err','Ligipääs puudub']};
+  const [cls, txt] = map[S.noAccess ? 'noaccess' : !S.canWrite && S.sync === 'ok' ? 'ro' : S.sync] || map.wait;
+  sy.className = 'sync ' + cls; sy.querySelector('span').textContent = txt; sy.title = txt;
+}
+function markDenied(){
+  if(S.isOwner || S.denied) return;
+  S.denied = true; S.canWrite = false; document.body.classList.add('ro');
+  setTimeout(render, 0);
+}
+const SHARE_HELP = `<ol style="text-align:left;max-width:520px;margin:14px auto 0;padding-left:20px;line-height:1.6">
+  <li>Palu registri omanikul lisada sinu e-posti aadress lehe jagamismenüüs (<b>Share</b>) õigusega <b>Editor</b>.</li>
+  <li>Logi claude.ai-sse sisse <b>sama e-posti aadressiga</b> ja ava leht uuesti.</li></ol>`;
+function accessPanel(){
+  return `<div class="panel empty-big"><h2>Sul pole ligipääsu patsiendiandmetele</h2><p>Register on privaatne. Patsiente näevad ja lisavad ainult inimesed, kelle omanik on kutsunud toimetajaks. Avaliku lingi kaudu avatud leht andmeid ei näita.</p>${SHARE_HELP}</div>`;
+}
+function deniedBanner(){
+  return `<div class="banner" style="border-style:solid;border-color:color-mix(in srgb,var(--crit) 45%,var(--line))"><b style="color:var(--crit)">Muutmisõigus puudub.</b><span>Patsientide lisamiseks ja muutmiseks palu registri omanikul kutsuda sind jagamismenüüs (Share) õigusega Editor, seejärel ava leht uuesti.</span></div>`;
+}
+function notReady(){
+  if(S.noAccess) return accessPanel();
+  if(S.sync === 'none') return `<div class="empty-big"><h2>Andmebaas pole saadaval</h2><p>Patsiendiandmed on salvestatud claude.ai-s. Ava see leht claude.ai-s sisselogituna.</p></div>`;
+  if(S.sync === 'err' && !S.loaded) return `<div class="empty-big"><h2>Andmeid ei saanud laadida</h2><p>Kontrolli internetiühendust ja laadi leht uuesti.</p></div>`;
+  if(!S.loaded) return `<div class="empty-big"><h2>Laen patsiente…</h2><p>Hetk, ühendan andmebaasiga.</p></div>`;
+  return '';
+}
+
+/* ---------- overview ---------- */
+function computeStats(){
+  const all = allPatients(); const now = Date.now(); const D = 864e5;
+  const active = all.filter(isActive);
+  const departed = all.filter(p => !isActive(p) && p.dischargedAt && p.arrivedAt);
+  const new24 = all.filter(p => { const d = dt(p.arrivedAt); return d && now - d < D; }).length;
+  const left7 = departed.filter(p => now - dt(p.dischargedAt) < 7*D);
+  const avgStay = departed.length ? departed.reduce((a,p) => a + (dt(p.dischargedAt) - dt(p.arrivedAt)), 0) / departed.length / D : null;
+  const epMissing = all.filter(p => !isActive(p) && !(p.epikriis && p.epikriis.final));
+  const highRisk = active.filter(p => { const n = news2(lastVitals(p)); return p.triage === 'T1' || (n && n.complete && n.total >= 5); });
+  return {all, active, departed, new24, left7, avgStay, epMissing, highRisk};
+}
+function attention(st){
+  const out = []; const now = Date.now();
+  for(const p of st.active){
+    const v = lastVitals(p); const n = news2(v);
+    if(p.triage === 'T1') out.push({p, sev:'crit', w:0, why:'Triaaž T1 – vajab kohest tähelepanu'});
+    if(n && n.complete && n.total >= 7) out.push({p, sev:'crit', w:1, why:`NEWS2 ${n.total} – kõrge risk`, when:v.at});
+    else if(n && n.complete && n.total >= 5) out.push({p, sev:'warn', w:2, why:`NEWS2 ${n.total} – keskmine risk`, when:v.at});
+    else if(n && n.risk === 'lowmed') out.push({p, sev:'warn', w:3, why:'Üks näitaja kriitilises vahemikus', when:v.at});
+    if(!v) out.push({p, sev:'warn', w:4, why:'Elulisi näitajaid pole mõõdetud'});
+    else { const h = (now - dt(v.at)) / 36e5; if(h >= 8) out.push({p, sev:'warn', w:5, why:`Näitajad mõõtmata ${Math.floor(h)} h`, when:v.at}); }
+    for(const t of (p.treatments||[])) if(t.status === 'plaanis' && dt(t.at) && dt(t.at) < now) out.push({p, sev:'warn', w:6, why:`Ootab: ${t.type || 'protseduur'}`, when:t.at});
+  }
+  for(const p of st.epMissing) out.push({p, sev:'info', w:7, why:p.epikriis && Object.keys(p.epikriis).some(k => p.epikriis[k]) ? 'Epikriis on mustand, kinnitamata' : 'Epikriis koostamata', when:p.dischargedAt});
+  return out.sort((a,b) => a.w - b.w);
+}
+function hbars(rows, max){
+  const m = max || Math.max(1, ...rows.map(r => r.value));
+  return `<div class="hb">${rows.map(r => `<div class="hb-row" title="${esc(r.title || r.label)}: ${r.value}"><span class="hb-l">${r.html || esc(r.label)}</span><span class="hb-track"><span class="hb-fill" style="width:${(r.value/m*100).toFixed(1)}%;${r.c ? `--c:${r.c}` : ''}"></span></span><span class="hb-v">${r.value}</span></div>`).join('')}</div>`;
+}
+function colChart(b){
+  const max = Math.max(...b.map(x => x.n), 1);
+  const step = max <= 4 ? 1 : max <= 8 ? 2 : Math.ceil(max/4);
+  const top = Math.ceil(max/step) * step; const ticks = [];
+  for(let t = 0; t <= top; t += step) ticks.push(t);
+  return `<div class="cc"><div class="cc-plot">${ticks.map(t => `<div class="cc-gl" style="bottom:${t/top*100}%"><span>${t}</span></div>`).join('')}
+    <div class="cc-bars">${b.map((x,i) => `<div class="cc-col${i === b.length-1 ? ' today' : ''}" tabindex="0" data-tip="${esc(x.label)}: ${x.n} ${x.n === 1 ? 'saabumine' : 'saabumist'}" aria-label="${esc(x.label)}: ${x.n}"><div class="cc-bar" style="height:${x.n/top*100}%"></div></div>`).join('')}</div></div>
+    <div class="cc-x">${b.map((x,i) => `<span>${(b.length-1-i) % 3 === 0 ? esc(i === b.length-1 ? 'täna' : x.short) : ''}</span>`).join('')}</div></div>`;
+}
+function viewOverview(){
+  const nr = notReady(); const st = computeStats(); const now = new Date();
+  const head = `<div class="page-h"><div><h1>Ülevaade</h1><div class="sub">Seis ${fmtDT(now.toISOString())} · ${st.all.length} patsienti registris</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">${S.downloads ? `<button class="btn" data-act="export-csv">${I.dl}Ekspordi CSV</button>` : ''}</div></div>`;
+  if(nr) return head + nr;
+  if(!st.all.length){
+    return head + `<div class="panel empty-big"><h2>Registris pole veel patsiente</h2><p>${S.canWrite ? 'Lisa esimene patsient nupuga „Uus patsient“. Ülevaate numbrid ja graafikud täituvad automaatselt.' : 'Sul pole ligipääsu patsiendiandmetele või pole neid veel lisatud. Ligipääsu saamiseks palu omanikul kutsuda sind toimetajaks.'}</p>${S.canWrite ? `<p><button class="btn btn-primary" data-act="new-patient">${I.plus}Uus patsient</button></p>` : ''}</div>`;
+  }
+  const examples = st.all.filter(p => p.example).length;
+  const cap = Number(S.settings.capacity) || 0;
+  const occ = st.active.length;
+  const leftHome = st.left7.filter(p => p.status === 'valja').length, leftEvac = st.left7.filter(p => p.status === 'evakueeritud').length;
+  const kpis = `<div class="kpis">
+    <div class="kpi"><div class="lbl">Kohal <button class="link w" data-act="edit-capacity" style="font-size:12px;text-transform:none;letter-spacing:0">muuda</button></div><div class="v">${occ}${cap ? `<small>/ ${cap}</small>` : ''}</div>${cap ? `<div class="meter" title="Täituvus ${Math.round(occ/cap*100)}%"><i style="width:${Math.min(100, occ/cap*100)}%"></i></div><div class="d">${Math.max(0, cap-occ)} voodikohta vaba</div>` : '<div class="d">voodikohti määramata</div>'}</div>
+    <div class="kpi"><div class="lbl">Saabunud 24 h</div><div class="v">${st.new24}</div><div class="d">uut patsienti</div></div>
+    <div class="kpi"><div class="lbl">Lahkunud 7 p</div><div class="v">${st.left7.length}</div><div class="d">${leftHome} välja · ${leftEvac} evakueeritud</div></div>
+    <div class="kpi"><div class="lbl">Keskm. viibimine</div><div class="v">${st.avgStay == null ? '—' : nf.format(st.avgStay)}<small>${st.avgStay == null ? '' : 'ööp'}</small></div><div class="d">${st.departed.length} lahkunu põhjal</div></div>
+    <div class="kpi${st.highRisk.length ? ' alert' : ''}"><div class="lbl">Kõrge risk</div><div class="v">${st.highRisk.length}</div><div class="d">T1 või NEWS2 ≥ 5</div></div>
+    <div class="kpi"><div class="lbl">Epikriis puudu</div><div class="v">${st.epMissing.length}</div><div class="d">lahkunud, kinnitamata</div></div>
+  </div>`;
+  const att = attention(st);
+  const attHTML = att.length ? `<div class="att">${att.slice(0, 9).map(a => `<button class="att-row" data-act="open-patient" data-id="${esc(a.p.id)}"><span class="sev ${a.sev}" aria-hidden="true"></span><span><span class="who">${esc(fullName(a.p))}</span>${a.p.bed ? ` <span class="muted mono">· voodi ${esc(a.p.bed)}</span>` : ''}<br><span class="why">${esc(a.why)}</span></span><span class="when">${a.when ? esc(rel(a.when)) : ''}</span></button>`).join('')}</div>${att.length > 9 ? `<div class="empty">+ veel ${att.length - 9}</div>` : ''}` : `<div class="empty">Kõik korras — ükski patsient ei vaja praegu erilist tähelepanu.</div>`;
+  const triRows = Object.entries(TRIAGE).map(([k,t]) => ({label:`${k} ${t.name}`, html:`<span class="chip c ${k}"><span class="dot"></span>${k}</span> ${esc(t.name)}`, value:st.active.filter(p => p.triage === k).length, c:`var(--t${k[1]})`}));
+  const stRows = Object.entries(STATUS).map(([k,s]) => ({k, label:s.label, value:st.all.filter(p => (p.status||'ravil') === k).length})).filter(r => r.value || r.k !== 'surnud');
+  // admissions 14 days
+  const days = []; const base = new Date(); base.setHours(0,0,0,0);
+  for(let i = 13; i >= 0; i--){ const d = new Date(base); d.setDate(d.getDate() - i); days.push({d, n:0, label:`${pad(d.getDate())}.${pad(d.getMonth()+1)}`, short:`${pad(d.getDate())}.${pad(d.getMonth()+1)}`}); }
+  for(const p of st.all){ const a = dt(p.arrivedAt); if(!a) continue; const k = new Date(a); k.setHours(0,0,0,0); const b = days.find(x => x.d.getTime() === k.getTime()); if(b) b.n++; }
+  const in14 = days.reduce((a,b) => a + b.n, 0);
+  // diagnoses
+  const dxc = new Map();
+  for(const p of st.all) for(const d of (p.diagnoses||[])){ const key = (d.code || d.text || '').toUpperCase(); if(!key) continue; const e = dxc.get(key) || {code:d.code, text:d.text, n:0}; e.n++; dxc.set(key, e); }
+  const dxRows = [...dxc.values()].sort((a,b) => b.n - a.n).slice(0, 6).map(d => ({label:`${d.code||''} ${d.text||''}`, html:`${d.code ? `<span class="mono">${esc(d.code)}</span> ` : ''}${esc(d.text||'')}`, value:d.n}));
+  // meds
+  const mc = new Map();
+  for(const p of st.active) for(const m of (p.meds||[])) if(m.active !== false){ const k = (m.name||'').trim(); if(!k) continue; mc.set(k, (mc.get(k)||0) + 1); }
+  const medRows = [...mc.entries()].sort((a,b) => b[1] - a[1]).slice(0, 6).map(([k,n]) => ({label:k, value:n}));
+  const givens24 = st.active.reduce((a,p) => a + (p.meds||[]).reduce((b,m) => b + (m.given||[]).filter(g => Date.now() - dt(g.at) < 864e5).length, 0), 0);
+  // demographics
+  const ages = st.all.map(p => ageOf(p.birthDate)).filter(a => a != null);
+  const avgAge = ages.length ? ages.reduce((a,b) => a+b, 0) / ages.length : null;
+  const males = st.all.filter(p => p.sex === 'M').length, females = st.all.filter(p => p.sex === 'N').length;
+  const groups = [['alla 30', a => a < 30], ['30–49', a => a >= 30 && a < 50], ['50–64', a => a >= 50 && a < 65], ['65–79', a => a >= 65 && a < 80], ['80+', a => a >= 80]].map(([l,f]) => ({label:l, value:ages.filter(f).length}));
+
+  return head + (examples ? `<div class="banner"><span class="chip ex">Näidis</span><span>Registris on ${examples} näidispatsienti, et näeksid, kuidas platvorm töötab. Kustuta need, kui alustad päris andmetega.</span><span class="sp"></span><button class="btn btn-sm w" data-act="del-examples">Kustuta näidised</button></div>` : '') + kpis + `
+  <div class="grid">
+    <section class="panel s7"><div class="panel-h"><h3>Vajab tähelepanu</h3><span class="note">${att.length} märget</span></div>${attHTML}</section>
+    <section class="panel s5"><div class="panel-h"><h3>Triaaž · kohal olevad</h3><span class="note">${st.active.length} patsienti</span></div>${hbars(triRows)}
+      <div class="panel-h" style="margin-top:22px"><h3>Staatus · kõik</h3></div>${hbars(stRows)}</section>
+    <section class="panel s7"><div class="panel-h"><h3>Saabumised · 14 päeva</h3><span class="note">${in14} kokku</span></div>${colChart(days)}</section>
+    <section class="panel s5"><div class="panel-h"><h3>Sagedasemad diagnoosid</h3></div>${dxRows.length ? hbars(dxRows) : '<div class="empty">Diagnoose pole veel sisestatud.</div>'}</section>
+    <section class="panel s6"><div class="panel-h"><h3>Aktiivsed ravimid</h3><span class="note">${givens24} manustamist 24 h</span></div>${medRows.length ? hbars(medRows) : '<div class="empty">Kohal olevatel patsientidel pole aktiivseid ravimeid.</div>'}</section>
+    <section class="panel s6"><div class="panel-h"><h3>Demograafia · kõik</h3></div>
+      <div class="demo"><div><div class="big">${avgAge == null ? '—' : nf.format(avgAge)}</div><div class="small">keskmine vanus</div></div><div><div class="big">${males}</div><div class="small">meest</div></div><div><div class="big">${females}</div><div class="small">naist</div></div></div>
+      ${hbars(groups)}</section>
+  </div>`;
+}
+
+/* ---------- list ---------- */
+function viewList(){
+  const nr = notReady();
+  const head = `<div class="page-h"><div><h1>Patsiendid</h1><div class="sub">${S.loaded ? `${allPatients().filter(isActive).length} kohal · ${allPatients().length} kokku` : ''}</div></div>${S.downloads ? `<button class="btn" data-act="export-csv">${I.dl}Ekspordi CSV</button>` : ''}</div>`;
+  if(nr) return head + nr;
+  const q = S.search.trim().toLowerCase();
+  const triOrder = {T1:0, T2:1, T3:2, T4:3};
+  let list = allPatients().filter(p => S.filter === 'koik' ? true : S.filter === 'kohal' ? isActive(p) : !isActive(p));
+  if(q) list = list.filter(p => [fullName(p), p.idCode, p.bed, p.unit, ...(p.diagnoses||[]).map(d => `${d.code} ${d.text}`)].join(' ').toLowerCase().includes(q));
+  const cmp = {
+    triaaz:(a,b) => (triOrder[a.triage] ?? 9) - (triOrder[b.triage] ?? 9) || (b.arrivedAt||'').localeCompare(a.arrivedAt||''),
+    saabumine:(a,b) => (b.arrivedAt||'').localeCompare(a.arrivedAt||''),
+    nimi:(a,b) => (a.lastName||'').localeCompare(b.lastName||'', 'et') || (a.firstName||'').localeCompare(b.firstName||'', 'et'),
+    voodi:(a,b) => String(a.bed||'zz').localeCompare(String(b.bed||'zz'), 'et', {numeric:true})
+  }[S.sort];
+  list.sort(cmp);
+  const tb = `<div class="toolbar">
+    <label class="search">${I.search}<input id="q" type="search" placeholder="Otsi nime, isikukoodi, voodi või diagnoosi järgi" value="${esc(S.search)}" data-inp="search" aria-label="Otsi"></label>
+    <div class="seg" role="group" aria-label="Filter">${[['kohal','Kohal'],['lahkunud','Lahkunud'],['koik','Kõik']].map(([k,l]) => `<button data-act="filter" data-f="${k}" aria-pressed="${S.filter === k}">${l}</button>`).join('')}</div>
+    <select class="sel" data-chg="sort" aria-label="Järjesta">${opt([['triaaz','Triaaži järgi'],['saabumine','Uuemad ees'],['nimi','Nime järgi'],['voodi','Voodikoha järgi']], S.sort)}</select>
+  </div>`;
+  if(!list.length) return head + tb + `<div class="panel empty-big"><h2>${q ? 'Otsingule vastavaid patsiente pole' : S.filter === 'kohal' ? 'Hetkel pole kedagi kohal' : 'Patsiente pole'}</h2><p>${q ? 'Proovi teist otsingusõna või vali filtriks „Kõik“.' : S.canWrite ? 'Uue patsiendi lisamiseks vajuta „Uus patsient“.' : ''}</p></div>`;
+  const rows = list.map(p => {
+    const a = ageOf(p.birthDate); const dx = primaryDx(p); const st = STATUS[p.status] || STATUS.ravil;
+    const tri = p.triage && TRIAGE[p.triage] ? `<span class="chip c ${p.triage}"><span class="dot"></span>${p.triage} ${esc(TRIAGE[p.triage].name)}</span>` : '<span class="muted">—</span>';
+    const stc = `<span class="chip c st-${esc(p.status||'ravil')}"><span class="dot"></span>${esc(st.label)}</span>`;
+    return `<button class="prow" data-act="open-patient" data-id="${esc(p.id)}">
+      <span class="c-name"><span class="nm">${esc(fullName(p))}${p.example ? '<span class="chip ex">Näidis</span>' : ''}${hasAllergy(p) ? '<span class="flag" title="Allergia: ' + esc(p.allergies) + '">Allergia</span>' : ''}</span>
+        <span class="id">${[p.idCode ? `<span class="mono">${esc(p.idCode)}</span>` : '', a != null ? `${a} a` : '', p.sex || ''].filter(Boolean).join(' · ') || '&nbsp;'}</span></span>
+      <span class="c-tri">${tri}</span><span class="c-st">${stc}</span><span class="c-bed mono">${esc(p.bed || '—')}</span>
+      <span class="c-chips hide-d">${tri}${stc}${p.bed ? `<span class="chip">Voodi ${esc(p.bed)}</span>` : ''}</span>
+      <span class="c-dx dx">${dx ? `${dx.code ? `<span class="mono">${esc(dx.code)}</span> ` : ''}${esc(dx.text)}` : '<span class="muted">Diagnoos määramata</span>'}</span>
+      <span class="c-news">${newsBadge(lastVitals(p))}</span>
+      <span class="c-ar ar">${isActive(p) ? `Saabus ${esc(rel(p.arrivedAt))}` : `Lahkus ${esc(fmtDay(p.dischargedAt))}`}</span>
+    </button>`;
+  }).join('');
+  return head + tb + `<div class="plist"><div class="prow head"><span>Patsient</span><span>Triaaž</span><span>Staatus</span><span>Voodi</span><span>Põhidiagnoos</span><span>NEWS2</span><span>Aeg</span></div>${rows}</div>`;
+}
+
+/* ---------- patient ---------- */
+function viewPatient(){
+  const nr = notReady(); const back = `<button class="back" data-act="nav" data-to="patsiendid">${I.back}Patsiendid</button>`;
+  if(nr) return back + nr;
+  const p = getP(S.pid);
+  if(!p) return back + `<div class="panel empty-big"><h2>Patsienti ei leitud</h2><p>Ta võib olla kustutatud. Mine tagasi patsientide nimekirja.</p></div>`;
+  p.id = p.id || S.pid;
+  const a = ageOf(p.birthDate); const st = STATUS[p.status] || STATUS.ravil;
+  const activeMeds = (p.meds||[]).filter(m => m.active !== false).length;
+  const ep = p.epikriis || {};
+  const epBadge = ep.final ? 'kinnitatud' : Object.keys(ep).some(k => ep[k] && k !== 'final') ? 'mustand' : '';
+  const tabs = [['kokkuvote','Kokkuvõte'],['isik','Isikuandmed'],['ravimid','Ravimid', activeMeds],['ravi','Ravi', (p.treatments||[]).length],['naitajad','Näitajad', (p.vitals||[]).length],['paevik','Päevik', (p.notes||[]).length],['epikriis','Epikriis', epBadge]];
+  const meta = [
+    p.idCode ? `<span class="mono">${esc(p.idCode)}</span>` : '',
+    a != null ? `${a} a` : '', p.sex === 'M' ? 'mees' : p.sex === 'N' ? 'naine' : '',
+    p.bloodType ? `Veregrupp ${esc(p.bloodType)}` : '', p.bed ? `Voodi ${esc(p.bed)}` : '', p.unit ? esc(p.unit) : ''
+  ].filter(Boolean).map(x => `<span>${x}</span>`).join('<span class="sep" aria-hidden="true"></span>');
+  const head = `${back}<div class="pt-top"><div style="min-width:0">
+      <h1>${esc(fullName(p))}${p.example ? '<span class="chip ex">Näidis</span>' : ''}</h1>
+      <div class="pt-meta">${p.triage && TRIAGE[p.triage] ? `<span class="chip c ${p.triage}"><span class="dot"></span>${p.triage} ${esc(TRIAGE[p.triage].name)}</span>` : ''}<span class="chip c st-${esc(p.status||'ravil')}"><span class="dot"></span>${esc(st.label)}</span>${meta}</div>
+    </div>
+    <div class="pt-ctl w">
+      <label>Triaaž<select data-chg="triage">${opt(Object.entries(TRIAGE).map(([k,t]) => [k, `${k} – ${t.name}`]), p.triage)}</select></label>
+      <label>Staatus<select data-chg="status">${opt(Object.entries(STATUS).map(([k,s]) => [k, s.label]), p.status || 'ravil')}</select></label>
+      ${isActive(p) ? `<button class="btn btn-primary" data-act="discharge">Kirjuta välja</button>` : ''}
+    </div></div>
+    ${hasAllergy(p) ? `<div class="allergy"><b>Allergia</b><span>${esc(p.allergies)}</span></div>` : ''}
+    <div class="tabs" role="tablist">${tabs.map(([k,l,n]) => `<button role="tab" data-act="tab" data-tab="${k}" aria-selected="${S.tab === k}">${l}${n ? ` <span class="n">${esc(n)}</span>` : ''}</button>`).join('')}</div>`;
+  const body = {kokkuvote:tabSummary, isik:tabPersonal, ravimid:tabMeds, ravi:tabTreat, naitajad:tabVitals, paevik:tabNotes, epikriis:tabEpikriis}[S.tab] || tabSummary;
+  return head + body(p);
+}
+function vitalBoxes(v){
+  if(!v) return '<div class="empty">Mõõtmisi pole veel tehtud.</div>';
+  const n = news2(v); const pt = n ? n.parts : {};
+  const box = (k, label, val, unit, cls) => `<div class="vbox ${cls||''}"><div class="k">${label}</div><div class="val">${has(val) && val !== '' ? esc(typeof val === 'number' ? nf.format(val) : val) : '—'}${has(val) && unit ? `<small>${unit}</small>` : ''}</div></div>`;
+  return `<div class="vgrid">
+    ${box('bp','RR', v.bp, '', sevOf(pt.bp))}${box('hr','Pulss', v.hr, '/min', sevOf(pt.hr))}${box('spo2','SpO₂', v.spo2, '%', sevOf(pt.spo2))}
+    ${box('temp','Temp', v.temp, '°C', sevOf(pt.temp))}${box('rr','HS', v.rr, '/min', sevOf(pt.rr))}${box('avpu','Teadvus', v.avpu || 'A', '', sevOf(pt.avpu))}
+    ${has(v.pain) ? box('pain','Valu', v.pain, '/10', v.pain >= 7 ? 'warn' : '') : ''}${has(v.gcs) ? box('gcs','GCS', v.gcs, '', v.gcs < 15 ? (v.gcs <= 12 ? 'crit' : 'warn') : '') : ''}
+    <div class="vbox ${n && n.complete ? RISK[n.risk].cls : ''}"><div class="k">NEWS2</div><div class="val">${n && n.complete ? n.total : '—'}${n && n.complete ? `<small>${RISK[n.risk].label}</small>` : ''}</div></div>
+  </div><div class="legend" style="margin-top:8px">Mõõdetud ${esc(fmtDT(v.at))} (${esc(rel(v.at))})${v.o2 ? ' · saab lisahapnikku' : ''}${who(v) ? ' · ' + esc(who(v)) : ''}</div>`;
+}
+function tabSummary(p){
+  const dx = [...(p.diagnoses||[])].sort((a,b) => (b.primary?1:0) - (a.primary?1:0));
+  const meds = (p.meds||[]).filter(m => m.active !== false);
+  const notes = [...(p.notes||[])].sort(byAt).slice(0, 3);
+  const planned = (p.treatments||[]).filter(t => t.status === 'plaanis').sort((a,b) => (a.at||'').localeCompare(b.at||''));
+  return `<div class="grid">
+    <section class="panel s6"><div class="panel-h"><h3>Vastuvõtt</h3><button class="btn btn-sm w" data-act="edit-admission">Muuda</button></div>
+      <dl class="dl"><dt>Saabus</dt><dd>${esc(fmtDT(p.arrivedAt))} <span class="muted">(${esc(rel(p.arrivedAt))})</span></dd>
+      <dt>Saabus / toodi</dt><dd>${esc(p.arrivedFrom || '—')}</dd><dt>Voodikoht</dt><dd>${esc(p.bed || '—')}</dd>
+      ${!isActive(p) ? `<dt>Lahkus</dt><dd>${esc(fmtDT(p.dischargedAt))}</dd>` : ''}
+      <dt>Pöördumise põhjus</dt><dd>${esc(p.complaint || '—')}</dd></dl></section>
+    <section class="panel s6"><div class="panel-h"><h3>Diagnoosid</h3><button class="btn btn-sm w" data-act="add-dx">${I.plus}Lisa</button></div>
+      ${dx.length ? dx.map(d => `<button class="dx-row" data-act="edit-dx" data-i="${esc(d.id)}"><span class="code">${esc(d.code || '—')}</span><span style="flex:1">${esc(d.text)}</span>${d.primary ? '<span class="pri">Põhi</span>' : ''}</button>`).join('') : '<div class="empty">Diagnoos on veel määramata.</div>'}</section>
+    <section class="panel s12"><div class="panel-h"><h3>Viimased elulised näitajad</h3><button class="btn btn-sm w" data-act="add-vit">${I.plus}Uus mõõtmine</button></div>${vitalBoxes(lastVitals(p))}</section>
+    <section class="panel s6"><div class="panel-h"><h3>Aktiivsed ravimid</h3><button class="btn btn-sm w" data-act="add-med">${I.plus}Lisa</button></div>
+      ${meds.length ? meds.map(m => medItem(m, true)).join('') : '<div class="empty">Aktiivseid ravimeid pole.</div>'}</section>
+    <section class="panel s6"><div class="panel-h"><h3>Plaanis protseduurid</h3><button class="btn btn-sm w" data-act="add-tx">${I.plus}Lisa</button></div>
+      ${planned.length ? planned.map(txItem).join('') : '<div class="empty">Plaanitud protseduure pole.</div>'}
+      <div class="panel-h" style="margin-top:18px"><h3>Viimased sissekanded</h3><button class="link" data-act="tab" data-tab="paevik">Kõik</button></div>
+      ${notes.length ? notes.map(n => noteItem(n, false)).join('') : '<div class="empty">Sissekandeid pole.</div>'}</section>
+  </div>`;
+}
+function tabPersonal(p){
+  const a = ageOf(p.birthDate);
+  const row = (k, v, mono) => `<dt>${k}</dt><dd${mono ? ' class="mono"' : ''}>${esc(v || '—')}</dd>`;
+  return `<div class="grid">
+    <section class="panel s6"><div class="panel-h"><h3>Isik</h3><button class="btn btn-sm w" data-act="edit-personal">Muuda isikuandmeid</button></div><dl class="dl">
+      ${row('Eesnimi', p.firstName)}${row('Perekonnanimi', p.lastName)}${row('Isikukood', p.idCode, true)}${row('Sünniaeg', p.birthDate ? `${fmtDay(p.birthDate)}${a != null ? ` (${a} a)` : ''}` : '')}
+      ${row('Sugu', p.sex === 'M' ? 'Mees' : p.sex === 'N' ? 'Naine' : '')}${row('Veregrupp', p.bloodType)}${row('Üksus / organisatsioon', p.unit)}</dl></section>
+    <section class="panel s6"><div class="panel-h"><h3>Kontakt</h3></div><dl class="dl">
+      ${row('Telefon', p.phone)}${row('Aadress', p.address)}${row('Lähedane', [p.contactName, p.contactRelation ? `(${p.contactRelation})` : ''].filter(Boolean).join(' '))}${row('Lähedase telefon', p.contactPhone)}</dl></section>
+    <section class="panel s12"><div class="panel-h"><h3>Terviseandmed</h3></div><dl class="dl">
+      ${row('Allergiad', p.allergies)}${row('Kroonilised haigused', p.chronic)}${row('Püsiravimid kodus', p.homeMeds)}${row('Märkused', p.personalNotes)}</dl></section>
+    <section class="panel s12 w" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><div class="lbl">Kirje</div><div class="muted" style="font-size:14px;margin-top:4px">Loodud ${esc(fmtDT(p.createdAt))} · viimati muudetud ${esc(fmtDT(p.updatedAt))}</div></div>
+      <button class="btn btn-danger" data-act="del-patient">Kustuta patsient</button></section>
+  </div>`;
+}
+function medItem(m, compact){
+  const given = [...(m.given||[])].sort(byAt); const last = given[0];
+  const off = m.active === false;
+  const route = (ROUTES.find(r => r[0] === m.route) || [m.route])[0];
+  const key = 'g-' + m.id;
+  return `<div class="item${off ? ' off' : ''}"><div class="main">
+      <div class="ttl">${esc(m.name)} <span class="mono" style="font-weight:500">${esc(m.dose || '')}</span></div>
+      <div class="sub">${[route, m.freq].filter(Boolean).map(esc).join(' · ')}${!compact ? `${m.start ? ` · alates ${esc(fmtDay(m.start))}` : ''}${m.end ? ` kuni ${esc(fmtDay(m.end))}` : ''}${m.prescriber ? ` · määras ${esc(m.prescriber)}` : ''}` : ''}</div>
+      ${m.note && !compact ? `<div class="sub" style="font-style:italic">${esc(m.note)}</div>` : ''}
+      <div class="sub">${last ? `Viimati manustatud <b>${esc(fmtShort(last.at))}</b> (${esc(rel(last.at))})${who(last) ? ' · ' + esc(who(last)) : ''}` : '<span class="muted">Pole veel manustatud</span>'}</div>
+      ${!compact && given.length ? `<details data-key="${key}"${S.open.has(key) ? ' open' : ''}><summary>Manustamised (${given.length})</summary><ul>${given.slice(0, 30).map(g => `<li><span class="mono">${esc(fmtDT(g.at))}</span>${who(g) ? ' · ' + esc(who(g)) : ''}</li>`).join('')}</ul></details>` : ''}
+    </div>
+    <div class="acts w">${off ? `<button class="btn btn-sm" data-act="resume-med" data-i="${esc(m.id)}">Taasta</button>` : `<button class="btn btn-sm btn-primary" data-act="give-med" data-i="${esc(m.id)}">Manusta</button>`}${!compact ? `<button class="btn btn-sm" data-act="edit-med" data-i="${esc(m.id)}">Muuda</button>${off ? '' : `<button class="btn btn-sm btn-ghost" data-act="stop-med" data-i="${esc(m.id)}">Lõpeta</button>`}` : ''}</div></div>`;
+}
+function tabMeds(p){
+  const act = (p.meds||[]).filter(m => m.active !== false), off = (p.meds||[]).filter(m => m.active === false);
+  return `<div class="grid"><section class="panel s12"><div class="panel-h"><h3>Aktiivsed ravimid · ${act.length}</h3><button class="btn btn-primary btn-sm w" data-act="add-med">${I.plus}Lisa ravim</button></div>
+    ${act.length ? act.map(m => medItem(m, false)).join('') : '<div class="empty">Aktiivseid ravimeid pole. Lisa ravim nupuga „Lisa ravim“.</div>'}</section>
+    ${p.homeMeds ? `<section class="panel s12"><div class="panel-h"><h3>Püsiravimid kodus</h3></div><div style="white-space:pre-wrap">${esc(p.homeMeds)}</div></section>` : ''}
+    ${off.length ? `<section class="panel s12"><div class="panel-h"><h3>Lõpetatud · ${off.length}</h3></div>${off.map(m => medItem(m, false)).join('')}</section>` : ''}</div>`;
+}
+function txItem(t){
+  const stl = (TX_STATUS.find(s => s[0] === t.status) || ['', t.status])[1];
+  const overdue = t.status === 'plaanis' && dt(t.at) && dt(t.at) < new Date();
+  return `<div class="item"><div class="main"><div><span class="ttype">${esc(t.type || 'Muu')}</span><span class="chip c ${t.status === 'tehtud' ? 'ok' : t.status === 'katkestatud' ? '' : overdue ? 'warn' : 'st-jalgimisel'}"><span class="dot"></span>${esc(stl)}${overdue ? ' · hilineb' : ''}</span></div>
+    <div style="margin-top:6px;white-space:pre-wrap">${esc(t.desc)}</div>
+    <div class="sub">${esc(fmtDT(t.at))} (${esc(rel(t.at))})${who(t) ? ' · ' + esc(who(t)) : ''}</div></div>
+    <div class="acts w">${t.status === 'plaanis' ? `<button class="btn btn-sm btn-primary" data-act="done-tx" data-i="${esc(t.id)}">Märgi tehtuks</button>` : ''}<button class="btn btn-sm" data-act="edit-tx" data-i="${esc(t.id)}">Muuda</button></div></div>`;
+}
+function tabTreat(p){
+  const list = [...(p.treatments||[])].sort(byAt);
+  const planned = list.filter(t => t.status === 'plaanis').reverse(), rest = list.filter(t => t.status !== 'plaanis');
+  return `<div class="grid">
+    <section class="panel s12"><div class="panel-h"><h3>Raviplaan</h3><button class="btn btn-sm w" data-act="edit-plan">Muuda</button></div><div style="white-space:pre-wrap">${p.plan ? esc(p.plan) : '<span class="muted">Raviplaan on kirjutamata.</span>'}</div></section>
+    <section class="panel s12"><div class="panel-h"><h3>Plaanis · ${planned.length}</h3><button class="btn btn-primary btn-sm w" data-act="add-tx">${I.plus}Lisa protseduur</button></div>${planned.length ? planned.map(txItem).join('') : '<div class="empty">Plaanitud protseduure pole.</div>'}</section>
+    <section class="panel s12"><div class="panel-h"><h3>Tehtud · ${rest.length}</h3></div>${rest.length ? rest.map(txItem).join('') : '<div class="empty">Tehtud protseduure pole veel kirja pandud.</div>'}</section>
+  </div>`;
+}
+function trend(entries, key, o){
+  const pts = entries.filter(v => has(v[key])).map(v => ({t:dt(v.at).getTime(), y:Number(v[key]), at:v.at})).sort((a,b) => a.t - b.t);
+  if(pts.length < 2) return `<div class="trend"><div class="lbl">${o.label}</div><div class="empty" style="font-size:14px">Trendi jaoks on vaja vähemalt kahte mõõtmist.</div></div>`;
+  const W = 300, H = 110, L = 30, R = 34, T = 8, B = 20;
+  let lo = Math.min(o.lo, ...pts.map(p => p.y)), hi = Math.max(o.hi, ...pts.map(p => p.y));
+  const padY = (hi - lo) * 0.12 || 1; lo -= padY; hi += padY;
+  const t0 = pts[0].t, t1 = pts[pts.length-1].t || t0 + 1;
+  const x = t => L + (t1 === t0 ? 0.5 : (t - t0)/(t1 - t0)) * (W - L - R);
+  const y = v => T + (1 - (v - lo)/(hi - lo)) * (H - T - B);
+  const f = v => nf.format(v);
+  const last = pts[pts.length-1];
+  return `<div class="trend"><div class="lbl"><span>${o.label}</span><span class="muted" style="text-transform:none;letter-spacing:0">norm ${f(o.nlo)}–${f(o.nhi)} ${o.unit}</span></div>
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.label)} trend">
+      <rect class="band" x="${L}" y="${y(o.nhi)}" width="${W-L-R}" height="${Math.max(0, y(o.nlo) - y(o.nhi))}" rx="2"/>
+      <line class="gl" x1="${L}" x2="${W-R}" y1="${H-B}" y2="${H-B}"/>
+      <text x="${L-6}" y="${y(o.nhi)+3}" text-anchor="end">${f(o.nhi)}</text><text x="${L-6}" y="${y(o.nlo)+3}" text-anchor="end">${f(o.nlo)}</text>
+      <path class="ln" d="${pts.map((p,i) => `${i ? 'L' : 'M'}${x(p.t).toFixed(1)},${y(p.y).toFixed(1)}`).join('')}"/>
+      ${pts.map((p,i) => `<circle class="pt${i === pts.length-1 ? ' last' : ''}" cx="${x(p.t).toFixed(1)}" cy="${y(p.y).toFixed(1)}" r="${i === pts.length-1 ? 4.5 : 3.5}"><title>${esc(fmtShort(p.at))}: ${f(p.y)} ${o.unit}</title></circle>`).join('')}
+      <text class="lv" x="${x(last.t)+8}" y="${y(last.y)+4}">${f(last.y)}</text>
+      <text x="${L}" y="${H-5}">${esc(fmtShort(pts[0].at))}</text><text x="${W-R}" y="${H-5}" text-anchor="end">${esc(fmtShort(last.at))}</text>
+    </svg></div>`;
+}
+function tabVitals(p){
+  const list = [...(p.vitals||[])].sort(byAt);
+  const cell = (val, score, fmt) => `<td class="${sevOf(score)}">${has(val) && val !== '' ? esc(fmt ? fmt(val) : val) : '—'}</td>`;
+  const rows = list.map(v => { const n = news2(v); const pt = n ? n.parts : {};
+    return `<tr class="click" data-act="edit-vit" data-i="${esc(v.id)}"><td>${esc(fmtShort(v.at))}</td>${cell(v.bp, pt.bp)}${cell(v.hr, pt.hr)}${cell(v.rr, pt.rr)}${cell(v.spo2, pt.spo2)}<td>${v.o2 ? 'jah' : '—'}</td>${cell(v.temp, pt.temp, x => nf.format(x))}${cell(v.avpu || 'A', pt.avpu)}<td>${has(v.gcs) ? esc(v.gcs) : '—'}</td><td>${has(v.pain) ? esc(v.pain) : '—'}</td><td>${has(v.glucose) ? esc(nf.format(v.glucose)) : '—'}</td><td>${newsBadge(v)}</td><td class="txt">${esc([v.note, who(v)].filter(Boolean).join(' · '))}</td></tr>`; }).join('');
+  return `<div class="grid">
+    <section class="panel s12"><div class="panel-h"><h3>Trend</h3><button class="btn btn-primary btn-sm w" data-act="add-vit">${I.plus}Uus mõõtmine</button></div>
+      <div class="trends">${trend(list, 'spo2', {label:'SpO₂', unit:'%', lo:90, hi:100, nlo:96, nhi:100})}${trend(list, 'hr', {label:'Pulss', unit:'/min', lo:50, hi:110, nlo:51, nhi:90})}${trend(list, 'temp', {label:'Temperatuur', unit:'°C', lo:35.5, hi:38.5, nlo:36.1, nhi:38})}</div>
+      <div class="legend"><span style="display:inline-block;width:14px;height:10px;border-radius:2px;background:var(--accent-soft)"></span> NEWS2 normivahemik</div></section>
+    <section class="panel s12"><div class="panel-h"><h3>Mõõtmised · ${list.length}</h3><span class="note">NEWS2: 0–4 madal · 5–6 keskmine · 7+ kõrge</span></div>
+      ${list.length ? `<div class="tscroll"><table class="vt"><thead><tr><th>Aeg</th><th>RR</th><th>Pulss</th><th>HS</th><th>SpO₂</th><th>O₂</th><th>Temp</th><th>Teadvus</th><th>GCS</th><th>Valu</th><th>Glük.</th><th>NEWS2</th><th>Märkus</th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">Mõõtmisi pole. Lisa esimene nupuga „Uus mõõtmine“.</div>'}</section>
+  </div>`;
+}
+function noteItem(n, canDel){
+  return `<div class="note-e"><div class="h"><span class="mono">${esc(fmtDT(n.at))}</span>${who(n) ? `<span>${esc(who(n))}</span>` : ''}<span class="sp"></span>${canDel ? `<button class="btn btn-sm btn-ghost w" data-act="del-note" data-i="${esc(n.id)}">Kustuta</button>` : ''}</div><p>${esc(n.text)}</p></div>`;
+}
+function tabNotes(p){
+  const list = [...(p.notes||[])].sort(byAt);
+  return `<div class="grid"><section class="panel s12"><div class="panel-h"><h3>Ravipäevik</h3><span class="note">${list.length} sissekannet</span></div>
+    <div class="composer w"><textarea id="note-new" data-inp="note" placeholder="Kirjuta sissekanne: seisund, muutused, tehtud tegevused…">${esc(S.noteDraft[p.id] || '')}</textarea>
+    <div class="row"><span class="muted" style="font-size:13.5px">Aeg ja autor lisanduvad automaatselt</span><button class="btn btn-primary" data-act="add-note">Lisa sissekanne</button></div></div>
+    <div style="margin-top:10px">${list.length ? list.map(n => noteItem(n, true)).join('') : '<div class="empty">Sissekandeid pole veel tehtud.</div>'}</div></section></div>`;
+}
+function epVal(p, k){ const d = S.epDraft[p.id]; if(d && k in d) return d[k]; return (p.epikriis || {})[k] ?? ''; }
+function epDoc(p, ep){
+  const a = ageOf(p.birthDate);
+  const days = p.arrivedAt && p.dischargedAt ? Math.max(1, Math.ceil((dt(p.dischargedAt) - dt(p.arrivedAt)) / 864e5)) : null;
+  const dest = [ep.destType, ep.destination].filter(Boolean).join(' — ');
+  return `<article class="doc"><div class="dh"><h2>EPIKRIIS</h2><div class="org">${esc(ORG)}<br>${ep.final ? 'Kinnitatud ' + esc(fmtDT(ep.finalAt)) : 'Mustand'}</div></div>
+    <div class="pid"><div><span>Patsient:</span> <b>${esc(fullName(p))}</b></div><div><span>Isikukood:</span> <span class="mono">${esc(p.idCode || '—')}</span></div>
+    <div><span>Sünniaeg:</span> ${esc(fmtDay(p.birthDate))}${a != null ? ` (${a} a)` : ''}</div><div><span>Allergiad:</span> ${esc(p.allergies || '—')}</div>
+    <div><span>Saabus:</span> ${esc(fmtDT(p.arrivedAt))}</div><div><span>Lahkus:</span> ${esc(p.dischargedAt ? fmtDT(p.dischargedAt) : '—')}${days ? ` (${days} ööp)` : ''}</div></div>
+    ${EP_FIELDS.map(([k,l]) => ep[k] ? `<section><h4>${esc(l)}</h4><p>${esc(ep[k])}</p></section>` : '').join('')}
+    ${dest ? `<section><h4>Suunatud</h4><p>${esc(dest)}</p></section>` : ''}
+    <div class="sig"><span>Koostaja: <b>${esc(ep.author || '—')}</b></span><span>Kuupäev: ${esc(fmtDay(ep.date))}</span></div></article>`;
+}
+function tabEpikriis(p){
+  const ep = Object.assign({}, p.epikriis || {}, S.epDraft[p.id] || {});
+  const dlBtn = S.downloads ? `<button class="btn" data-act="ep-download">${I.dl}Laadi alla</button>` : '';
+  if(p.epikriis && p.epikriis.final){
+    return `<div class="ep-bar"><span class="chip c ok"><span class="dot"></span>Kinnitatud</span><span class="save-st">${esc(fmtDT(p.epikriis.finalAt))}</span><span class="sp"></span><button class="btn" data-act="ep-copy">${I.copy}Kopeeri tekst</button>${dlBtn}<button class="btn w" data-act="ep-unlock">Ava muutmiseks</button></div>${epDoc(p, p.epikriis)}`;
+  }
+  const ta = (k, l, rows) => `<div class="full"><label for="ep-${k}">${esc(l)}</label><textarea id="ep-${k}" rows="${rows||3}" data-inp="ep" data-k="${k}"${S.canWrite ? '' : ' readonly'}>${esc(epVal(p, k))}</textarea></div>`;
+  const status = S.epSave[p.id] || (Object.keys(p.epikriis || {}).length ? `Salvestatud${p.updatedAt ? ' ' + fmtShort(p.updatedAt) : ''}` : 'Pole veel alustatud');
+  return `<div class="ep-bar"><span class="chip c st-jalgimisel"><span class="dot"></span>Mustand</span><span class="save-st" id="ep-status">${esc(status)}</span><span class="sp"></span>
+      <button class="btn w" data-act="ep-fill">Täida tühjad väljad kirjest</button><button class="btn" data-act="ep-copy">${I.copy}Kopeeri</button>${dlBtn}<button class="btn btn-primary w" data-act="ep-final">Kinnita epikriis</button></div>
+    ${isActive(p) ? `<div class="banner">Patsient on veel ${esc((STATUS[p.status]||STATUS.ravil).label.toLowerCase())}. Epikriisi saab koostada juba enne väljakirjutamist; kinnita see lahkumisel.</div>` : ''}
+    <section class="panel"><div class="ep-form">
+      ${ta('complaint','Pöördumise põhjus ja anamnees', 3)}${ta('findings','Objektiivne leid saabumisel', 3)}${ta('diagnoses','Diagnoosid (RHK-10)', 3)}${ta('investigations','Tehtud uuringud', 3)}
+      ${ta('course','Ravikäik ja teostatud ravi', 6)}${ta('meds','Ravimid lahkumisel', 3)}${ta('condition','Seisund lahkumisel', 2)}${ta('recommendations','Soovitused ja edasine ravi', 4)}
+      <div><label for="ep-destType">Suunatud</label><select id="ep-destType" data-inp="ep" data-k="destType"${S.canWrite ? '' : ' disabled'}>${opt(DEST, epVal(p,'destType'))}</select></div>
+      <div><label for="ep-destination">Sihtkoht / asutus</label><input id="ep-destination" data-inp="ep" data-k="destination" value="${esc(epVal(p,'destination'))}"${S.canWrite ? '' : ' readonly'}></div>
+      <div><label for="ep-author">Koostaja (nimi, ametikoht)</label><input id="ep-author" data-inp="ep" data-k="author" value="${esc(epVal(p,'author'))}" placeholder="nt dr Mari Kask"${S.canWrite ? '' : ' readonly'}></div>
+      <div><label for="ep-date">Kuupäev</label><input type="date" id="ep-date" data-inp="ep" data-k="date" value="${esc(epVal(p,'date'))}"${S.canWrite ? '' : ' readonly'}></div>
+    </div></section>`;
+}
+
+/* ---------- epikriis helpers ---------- */
+function vitalsLine(v){
+  if(!v) return '';
+  const n = news2(v); const parts = [];
+  if(v.bp) parts.push(`RR ${v.bp} mmHg`); if(has(v.hr)) parts.push(`pulss ${v.hr} x/min`); if(has(v.rr)) parts.push(`HS ${v.rr} x/min`);
+  if(has(v.spo2)) parts.push(`SpO₂ ${v.spo2}%${v.o2 ? ' (lisahapnikuga)' : ''}`); if(has(v.temp)) parts.push(`t ${nf.format(v.temp)} °C`);
+  parts.push(`teadvus ${v.avpu || 'A'}`); if(has(v.gcs)) parts.push(`GCS ${v.gcs}`); if(has(v.pain)) parts.push(`valu ${v.pain}/10`);
+  if(n && n.complete) parts.push(`NEWS2 ${n.total}`);
+  return parts.join(', ') + '.';
+}
+function epAuto(p){
+  const vit = [...(p.vitals||[])].sort((a,b) => (a.at||'').localeCompare(b.at||''));
+  const tx = [...(p.treatments||[])].sort((a,b) => (a.at||'').localeCompare(b.at||''));
+  const dx = [...(p.diagnoses||[])].sort((a,b) => (b.primary?1:0) - (a.primary?1:0));
+  const fmtMed = m => `${m.name} ${m.dose || ''} ${m.route || ''} ${m.freq || ''}`.replace(/\s+/g,' ').trim();
+  const days = p.arrivedAt ? Math.max(1, Math.ceil(((p.dischargedAt ? dt(p.dischargedAt) : new Date()) - dt(p.arrivedAt)) / 864e5)) : null;
+  const course = [];
+  if(p.arrivedAt) course.push(`Viibis põetuspunktis ${fmtDay(p.arrivedAt)}${p.dischargedAt ? ' – ' + fmtDay(p.dischargedAt) : ''}${days ? ` (${days} ööp)` : ''}.`);
+  const done = tx.filter(t => t.status === 'tehtud' && t.type !== 'Uuring');
+  if(done.length) course.push('Teostatud ravi:\n' + done.map(t => `• ${fmtDay(t.at)} ${t.type}: ${t.desc}`).join('\n'));
+  const usedMeds = (p.meds||[]).filter(m => (m.given||[]).length || m.active !== false);
+  if(usedMeds.length) course.push('Ravimid ravi ajal:\n' + usedMeds.map(m => `• ${fmtMed(m)}${m.start ? ` (alates ${fmtDay(m.start)})` : ''}`).join('\n'));
+  return {
+    complaint: p.complaint || '',
+    findings: vitalsLine(vit[0]),
+    diagnoses: dx.map(d => `${d.code ? d.code + ' ' : ''}${d.text}${d.primary ? ' (põhidiagnoos)' : ''}`).join('\n'),
+    investigations: tx.filter(t => t.type === 'Uuring').map(t => `${fmtDay(t.at)} — ${t.desc}`).join('\n'),
+    course: course.join('\n\n'),
+    meds: (p.meds||[]).filter(m => m.active !== false).map(fmtMed).join('\n'),
+    condition: vit.length ? 'Viimased näitajad: ' + vitalsLine(vit[vit.length-1]) : '',
+    author: S.me.name || '',
+    date: todayStr()
+  };
+}
+function epPlain(p, ep){
+  const a = ageOf(p.birthDate); const L = [];
+  L.push('EPIKRIIS', ORG, '');
+  L.push(`Patsient: ${fullName(p)}`, `Isikukood: ${p.idCode || '—'}`, `Sünniaeg: ${fmtDay(p.birthDate)}${a != null ? ` (${a} a)` : ''}`, `Allergiad: ${p.allergies || '—'}`, `Saabus: ${fmtDT(p.arrivedAt)}`, `Lahkus: ${p.dischargedAt ? fmtDT(p.dischargedAt) : '—'}`, '');
+  for(const [k,l] of EP_FIELDS) if(ep[k]) L.push(l.toUpperCase(), ep[k], '');
+  const dest = [ep.destType, ep.destination].filter(Boolean).join(' — '); if(dest) L.push('SUUNATUD', dest, '');
+  L.push(`Koostaja: ${ep.author || '—'}`, `Kuupäev: ${fmtDay(ep.date)}`, ep.final ? `Kinnitatud: ${fmtDT(ep.finalAt)}` : 'Mustand');
+  return L.join('\n');
+}
+function epHTMLFile(p, ep){
+  const a = ageOf(p.birthDate);
+  const sec = EP_FIELDS.map(([k,l]) => ep[k] ? `<h4>${esc(l)}</h4><p>${esc(ep[k])}</p>` : '').join('');
+  const dest = [ep.destType, ep.destination].filter(Boolean).join(' — ');
+  return `<!doctype html><html lang="et"><head><meta charset="utf-8"><title>Epikriis – ${esc(fullName(p))}</title><style>
+body{font:15px/1.5 Georgia,'Times New Roman',serif;color:#111;max-width:720px;margin:40px auto;padding:0 24px}
+.h{display:flex;justify-content:space-between;border-bottom:2px solid #111;padding-bottom:10px;margin-bottom:16px}
+h1{font:700 26px/1 Arial,sans-serif;letter-spacing:.15em;margin:0}.org{text-align:right;font:13px Arial,sans-serif;color:#444}
+table{font:14px Arial,sans-serif;margin-bottom:16px;border-collapse:collapse}td{padding:2px 16px 2px 0;vertical-align:top}td:first-child{color:#555}
+h4{font:700 12px Arial,sans-serif;text-transform:uppercase;letter-spacing:.08em;color:#333;margin:16px 0 3px}p{margin:0;white-space:pre-wrap}
+.sig{display:flex;justify-content:space-between;border-top:1px solid #999;margin-top:28px;padding-top:10px;font:14px Arial,sans-serif}
+@media print{body{margin:0 auto}}</style></head><body>
+<div class="h"><h1>EPIKRIIS</h1><div class="org">${esc(ORG)}<br>${ep.final ? 'Kinnitatud ' + esc(fmtDT(ep.finalAt)) : 'Mustand'}</div></div>
+<table><tr><td>Patsient</td><td><b>${esc(fullName(p))}</b></td></tr><tr><td>Isikukood</td><td>${esc(p.idCode || '—')}</td></tr><tr><td>Sünniaeg</td><td>${esc(fmtDay(p.birthDate))}${a != null ? ` (${a} a)` : ''}</td></tr>
+<tr><td>Allergiad</td><td>${esc(p.allergies || '—')}</td></tr><tr><td>Saabus</td><td>${esc(fmtDT(p.arrivedAt))}</td></tr><tr><td>Lahkus</td><td>${esc(p.dischargedAt ? fmtDT(p.dischargedAt) : '—')}</td></tr></table>
+${sec}${dest ? `<h4>Suunatud</h4><p>${esc(dest)}</p>` : ''}
+<div class="sig"><span>Koostaja: <b>${esc(ep.author || '—')}</b></span><span>Kuupäev: ${esc(fmtDay(ep.date))}</span></div></body></html>`;
+}
+function flushEp(pid){
+  clearTimeout(S.epTimer[pid]); S.epTimer[pid] = null;
+  const d = S.epDraft[pid]; if(!d || !Object.keys(d).length) return Promise.resolve(true);
+  const p = getP(pid); if(!p) return Promise.resolve(false);
+  const changes = {}; for(const [k,v] of Object.entries(d)) if((p.epikriis||{})[k] !== v) changes[k] = v;
+  if(!Object.keys(changes).length){ delete S.epDraft[pid]; return Promise.resolve(true); }
+  S.epSave[pid] = 'Salvestan…'; const st = $('#ep-status'); if(st) st.textContent = 'Salvestan…';
+  return patch(pid, {epikriis:changes}).then(ok => {
+    S.epSave[pid] = ok ? 'Salvestatud ' + fmtShort(nowISO()) : 'Salvestamata';
+    if(ok){ const cur = S.epDraft[pid] || {}; for(const k of Object.keys(changes)) if(cur[k] === changes[k]) delete cur[k]; }
+    const st2 = $('#ep-status'); if(st2) st2.textContent = S.epSave[pid];
+    return ok;
+  });
+}
+function copyText(text){
+  const fallback = () => openSheet(`<div style="display:flex;flex-direction:column;flex:1;min-height:0"><header class="sheet-h"><div><h2>Kopeeri tekst</h2><p>Vali tekst ja kopeeri see käsitsi.</p></div><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Sulge">×</button></header><div class="sheet-body"><pre>${esc(text)}</pre></div></div>`);
+  try { navigator.clipboard.writeText(text).then(() => toast('Tekst kopeeritud'), fallback); } catch { fallback(); }
+}
+function saveFile(filename, data){
+  if(!S.downloads){ toast('Allalaadimine pole selles vaates saadaval.', 'err'); return; }
+  S.downloads.save({filename, data}).then(() => toast('Fail salvestatud')).catch(e => {
+    if(e && e.code === 'declined') return;
+    toast(e && e.code === 'rate_limited' ? 'Üks salvestusaken on juba avatud.' : 'Faili ei saanud salvestada.', 'err');
+  });
+}
+function slug(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'patsient'; }
+function exportCSV(){
+  const cols = ['Perekonnanimi','Eesnimi','Isikukood','Sünniaeg','Vanus','Sugu','Veregrupp','Üksus','Telefon','Triaaž','Staatus','Voodikoht','Saabus','Lahkus','Põhidiagnoos','Allergiad','Aktiivsed ravimid','NEWS2 (viimane)','Epikriis'];
+  const q = v => { const s = String(v ?? ''); return /[;"\n\r]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s; };
+  const rows = allPatients().sort((a,b) => (b.arrivedAt||'').localeCompare(a.arrivedAt||'')).map(p => {
+    const dx = primaryDx(p); const n = news2(lastVitals(p));
+    return [p.lastName, p.firstName, p.idCode, fmtDay(p.birthDate).replace('—',''), ageOf(p.birthDate) ?? '', p.sex, p.bloodType, p.unit, p.phone, p.triage, (STATUS[p.status]||STATUS.ravil).label, p.bed, p.arrivedAt ? fmtDT(p.arrivedAt) : '', p.dischargedAt ? fmtDT(p.dischargedAt) : '', dx ? `${dx.code||''} ${dx.text}`.trim() : '', p.allergies, (p.meds||[]).filter(m => m.active !== false).map(m => `${m.name} ${m.dose||''}`.trim()).join(', '), n && n.complete ? n.total : '', p.epikriis && p.epikriis.final ? 'kinnitatud' : Object.keys(p.epikriis||{}).length ? 'mustand' : ''].map(q).join(';');
+  });
+  saveFile(`patsiendid-${todayStr()}.csv`, '﻿' + [cols.join(';'), ...rows].join('\r\n'));
+}
+
+/* ---------- actions ---------- */
+const cur = () => getP(S.pid);
+const findIn = (arr, id) => arr.find(x => x.id === id);
+const stamp = () => S.me.id ? {by:S.me.id} : (S.me.name ? {byName:S.me.name} : {});
+const ACT = {
+  'nav': t => go(t.dataset.to),
+  'close-sheet': () => closeSheet(),
+  'open-patient': t => { S.tab = 'kokkuvote'; go('p-' + t.dataset.id); },
+  'tab': t => { if(S.tab === 'epikriis' && S.pid) flushEp(S.pid); S.tab = t.dataset.tab; render(); },
+  'filter': t => { S.filter = t.dataset.f; render(); },
+  'new-patient': () => openForm({title:'Uus patsient', sub:'Ülejäänud andmed saad lisada patsiendi kaardil.', fields:F_NEW, values:{arrivedAt:nowISO(), triage:'T3'}, submitLabel:'Lisa patsient', mount:ikHook, onSubmit:v => createPatient(v)}),
+  'edit-personal': () => { const p = cur(); openForm({title:'Isikuandmed', sub:fullName(p), fields:F_PERSONAL, values:p, mount:ikHook, onSubmit:v => { patch(p.id, v, 'Isikuandmed salvestatud'); }}); },
+  'edit-admission': () => { const p = cur(); openForm({title:'Vastuvõtt', sub:fullName(p), fields:F_ADMISSION, values:p, onSubmit:v => { patch(p.id, v, 'Vastuvõtu andmed salvestatud'); }}); },
+  'edit-plan': () => { const p = cur(); openForm({title:'Raviplaan', sub:fullName(p), fields:[{k:'plan', label:'Raviplaan', type:'textarea', rows:8, full:true, ph:'Eesmärgid, jälgimise sagedus, edasised sammud…'}], values:p, onSubmit:v => { patch(p.id, v, 'Raviplaan salvestatud'); }}); },
+  'discharge': () => { const p = cur(); openForm({title:'Kirjuta välja', sub:fullName(p), submitLabel:'Kirjuta välja',
+      fields:[{k:'status', label:'Lahkumise viis', type:'select', options:[['valja','Välja kirjutatud'],['evakueeritud','Evakueeritud / üle viidud'],['surnud','Surnud']]},{k:'dischargedAt', label:'Lahkumise aeg', type:'datetime', required:true},{k:'destType', label:'Suunatud', type:'select', options:DEST},{k:'destination', label:'Sihtkoht / asutus', ph:'nt Pärnu Haigla EMO'}],
+      values:{status:'valja', dischargedAt:nowISO(), destType:(p.epikriis||{}).destType || '', destination:(p.epikriis||{}).destination || ''},
+      onSubmit:v => { patch(p.id, {status:v.status, dischargedAt:v.dischargedAt, epikriis:{destType:v.destType, destination:v.destination}}, `${fullName(p)}: ${STATUS[v.status].label.toLowerCase()}`); S.tab = 'epikriis'; render(); }}); },
+  'add-dx': () => { const p = cur(); openForm({title:'Lisa diagnoos', sub:fullName(p), fields:F_DX, values:{primary:!(p.diagnoses||[]).length}, onSubmit:v => {
+      editArr(p.id, 'diagnoses', a => { if(v.primary) a.forEach(d => d.primary = false); a.push({id:newId('d'), ...v}); }, 'Diagnoos lisatud'); }}); },
+  'edit-dx': t => { const p = cur(); const d = findIn(p.diagnoses||[], t.dataset.i); if(!d) return;
+      openForm({title:'Muuda diagnoosi', sub:fullName(p), fields:F_DX, values:d, onDelete:() => editArr(p.id, 'diagnoses', a => a.filter(x => x.id !== d.id), 'Diagnoos eemaldatud'), deleteLabel:'Eemalda',
+        onSubmit:v => editArr(p.id, 'diagnoses', a => { if(v.primary) a.forEach(x => x.primary = false); Object.assign(findIn(a, d.id), v); }, 'Diagnoos salvestatud')}); },
+  'add-med': () => { const p = cur(); openForm({title:'Lisa ravim', sub:fullName(p), fields:F_MED, values:{route:'p/o', start:todayStr()}, onSubmit:v => {
+      editArr(p.id, 'meds', a => { a.push({id:newId('m'), active:true, given:[], ...v}); }, `${v.name} lisatud`); }}); },
+  'edit-med': t => { const p = cur(); const m = findIn(p.meds||[], t.dataset.i); if(!m) return;
+      openForm({title:'Muuda ravimit', sub:fullName(p), fields:F_MED, values:m, onDelete:() => editArr(p.id, 'meds', a => a.filter(x => x.id !== m.id), 'Ravim kustutatud'),
+        onSubmit:v => editArr(p.id, 'meds', a => { Object.assign(findIn(a, m.id), v); }, 'Ravim salvestatud')}); },
+  'give-med': t => { const p = cur(); const id = t.dataset.i; const at = nowISO(); const m = findIn(p.meds||[], id); if(!m) return;
+      editArr(p.id, 'meds', a => { const x = findIn(a, id); x.given = [...(x.given||[]), {at, ...stamp()}]; }, `Manustatud: ${m.name} ${m.dose||''} kell ${fmtShort(at).split(' ')[1]}`,
+        () => editArr(p.id, 'meds', a => { const x = findIn(a, id); if(x) x.given = (x.given||[]).filter(g => g.at !== at); }, 'Manustamine tühistatud')); },
+  'stop-med': t => { const p = cur(); const id = t.dataset.i; const m = findIn(p.meds||[], id);
+      editArr(p.id, 'meds', a => { const x = findIn(a, id); x.active = false; x.end = x.end || todayStr(); }, `${m ? m.name : 'Ravim'} lõpetatud`,
+        () => editArr(p.id, 'meds', a => { const x = findIn(a, id); if(x) x.active = true; }, 'Ravim taastatud')); },
+  'resume-med': t => { const p = cur(); editArr(p.id, 'meds', a => { const x = findIn(a, t.dataset.i); if(x){ x.active = true; x.end = ''; } }, 'Ravim taastatud'); },
+  'add-tx': () => { const p = cur(); openForm({title:'Lisa protseduur', sub:fullName(p), fields:F_TX, values:{type:'Haavahooldus', status:'tehtud', at:nowISO(), byName:S.me.name || ''}, onSubmit:v => {
+      editArr(p.id, 'treatments', a => { a.push({id:newId('t'), ...v, ...(S.me.id ? {by:S.me.id} : {})}); }, 'Protseduur lisatud'); }}); },
+  'edit-tx': t => { const p = cur(); const x = findIn(p.treatments||[], t.dataset.i); if(!x) return;
+      openForm({title:'Muuda protseduuri', sub:fullName(p), fields:F_TX, values:{...x, byName:x.byName || who(x)}, onDelete:() => editArr(p.id, 'treatments', a => a.filter(y => y.id !== x.id), 'Protseduur kustutatud'),
+        onSubmit:v => editArr(p.id, 'treatments', a => { Object.assign(findIn(a, x.id), v); }, 'Protseduur salvestatud')}); },
+  'done-tx': t => { const p = cur(); const id = t.dataset.i; editArr(p.id, 'treatments', a => { const x = findIn(a, id); x.status = 'tehtud'; x.at = nowISO(); Object.assign(x, stamp()); }, 'Märgitud tehtuks'); },
+  'add-vit': () => { const p = cur(); openForm({title:'Uus mõõtmine', sub:fullName(p), fields:F_VIT, values:{at:nowISO(), avpu:'A'}, submitLabel:'Salvesta mõõtmine', onSubmit:v => {
+      editArr(p.id, 'vitals', a => { a.push({id:newId('v'), ...v, ...stamp()}); }, news2(v) && news2(v).complete ? `Salvestatud · NEWS2 ${news2(v).total}` : 'Mõõtmine salvestatud'); }}); },
+  'edit-vit': t => { const p = cur(); const v0 = findIn(p.vitals||[], t.dataset.i); if(!v0 || !S.canWrite) return;
+      openForm({title:'Muuda mõõtmist', sub:fullName(p), fields:F_VIT, values:v0, onDelete:() => editArr(p.id, 'vitals', a => a.filter(x => x.id !== v0.id), 'Mõõtmine kustutatud'),
+        onSubmit:v => editArr(p.id, 'vitals', a => { Object.assign(findIn(a, v0.id), v); }, 'Mõõtmine salvestatud')}); },
+  'add-note': () => { const p = cur(); const text = (S.noteDraft[p.id] || '').trim(); if(!text){ $('#note-new')?.focus(); return; }
+      S.noteDraft[p.id] = ''; editArr(p.id, 'notes', a => { a.push({id:newId('n'), at:nowISO(), text, ...stamp()}); }, 'Sissekanne lisatud'); },
+  'del-note': t => { const p = cur(); const id = t.dataset.i; const n = findIn(p.notes||[], id);
+      editArr(p.id, 'notes', a => a.filter(x => x.id !== id), 'Sissekanne kustutatud', () => editArr(p.id, 'notes', a => { a.push(n); }, 'Sissekanne taastatud')); },
+  'ep-fill': () => { const p = cur(); const auto = epAuto(p); const d = S.epDraft[p.id] = S.epDraft[p.id] || {}; let n = 0;
+      for(const [k,v] of Object.entries(auto)) if(v && !String(epVal(p, k)).trim()){ d[k] = v; n++; }
+      render(); toast(n ? `${n} välja täidetud patsiendi kirjest — vaata üle ja täienda` : 'Kõik väljad on juba täidetud'); if(n) flushEp(p.id); },
+  'ep-final': () => { const p = cur(); const ep = Object.assign({}, p.epikriis || {}, S.epDraft[p.id] || {});
+      const missing = ['diagnoses','course','author'].filter(k => !String(ep[k]||'').trim());
+      if(missing.length){ toast('Enne kinnitamist täida: ' + missing.map(k => ({diagnoses:'diagnoosid', course:'ravikäik', author:'koostaja'})[k]).join(', '), 'err'); return; }
+      openConfirm({title:'Kinnita epikriis', text:`Kinnitatud epikriis lukustatakse. Vajadusel saad selle hiljem uuesti muutmiseks avada.`, ok:'Kinnita', onOk:() => {
+        const d = S.epDraft[p.id] || {}; delete S.epDraft[p.id]; clearTimeout(S.epTimer[p.id]);
+        patch(p.id, {epikriis:{...d, date:ep.date || todayStr(), final:true, finalAt:nowISO(), ...(S.me.id ? {finalBy:S.me.id} : {})}}, 'Epikriis kinnitatud'); }}); },
+  'ep-unlock': () => { const p = cur(); patch(p.id, {epikriis:{final:false}}, 'Epikriis avatud muutmiseks'); },
+  'ep-copy': () => { const p = cur(); copyText(epPlain(p, Object.assign({}, p.epikriis || {}, S.epDraft[p.id] || {}))); },
+  'ep-download': () => { const p = cur(); saveFile(`epikriis-${slug(p.lastName)}-${slug(p.firstName)}-${todayStr()}.html`, epHTMLFile(p, Object.assign({}, p.epikriis || {}, S.epDraft[p.id] || {}))); },
+  'del-patient': () => { const p = cur(); openConfirm({title:'Kustuta patsient', text:`${fullName(p)} ja kõik tema andmed (ravimid, ravi, näitajad, päevik, epikriis) kustutatakse jäädavalt.`, ok:'Kustuta jäädavalt', danger:true, onOk:() => deletePatient(p.id)}); },
+  'export-csv': () => exportCSV(),
+  'edit-capacity': () => openForm({title:'Voodikohad', fields:[{k:'capacity', label:'Voodikohtade arv', type:'number', min:0, max:999, required:true}], values:{capacity:S.settings.capacity}, onSubmit:v => {
+      if(!S.db){ noDb(); return; } S.settings = {...S.settings, capacity:v.capacity}; render();
+      S.db.doc('settings/main').set({capacity:v.capacity, updatedAt:nowISO()}).then(() => toast('Voodikohtade arv salvestatud')).catch(e => toast(errText(e), 'err')); }}),
+  'del-examples': () => { const ex = allPatients().filter(p => p.example);
+      openConfirm({title:'Kustuta näidispatsiendid', text:`Kustutatakse ${ex.length} näidispatsienti. Sinu lisatud patsiente see ei puuduta.`, ok:'Kustuta näidised', danger:true, onOk:async () => {
+        if(!S.db){ noDb(); return; } for(const p of ex) S.overlay[p.id] = null; render();
+        let fails = 0; for(const p of ex){ try { await S.db.doc('patients/' + p.id).delete(); } catch { fails++; delete S.overlay[p.id]; } }
+        render(); toast(fails ? `${fails} näidist jäi kustutamata` : 'Näidispatsiendid kustutatud', fails ? 'err' : ''); }}); }
+};
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-act]'); if(!t) return;
+  const fn = ACT[t.dataset.act]; if(!fn) return;
+  if(t.tagName === 'A') e.preventDefault();
+  if(t.dataset.act !== 'close-sheet' && !['nav','tab','filter','open-patient','ep-copy','ep-download','export-csv','edit-vit'].includes(t.dataset.act) && !S.canWrite) return;
+  fn(t, e);
+});
+document.addEventListener('change', e => {
+  const t = e.target; const k = t.dataset && t.dataset.chg; if(!k) return;
+  if(k === 'sort'){ S.sort = t.value; render(); return; }
+  const p = cur(); if(!p) return;
+  if(k === 'triage') patch(p.id, {triage:t.value}, `Triaaž: ${t.value} ${TRIAGE[t.value].name}`);
+  if(k === 'status'){
+    const v = t.value; const data = {status:v};
+    if(!STATUS[v].active && !p.dischargedAt) data.dischargedAt = nowISO();
+    if(STATUS[v].active) data.dischargedAt = '';
+    patch(p.id, data, `Staatus: ${STATUS[v].label}`);
+  }
+});
+document.addEventListener('input', e => {
+  const t = e.target; const k = t.dataset && t.dataset.inp; if(!k) return;
+  if(k === 'search'){ S.search = t.value; render(); }
+  else if(k === 'note'){ S.noteDraft[S.pid] = t.value; }
+  else if(k === 'ep'){
+    const pid = S.pid; const d = S.epDraft[pid] = S.epDraft[pid] || {}; d[t.dataset.k] = t.value;
+    S.epSave[pid] = 'Muudetud…'; const st = $('#ep-status'); if(st) st.textContent = 'Muudetud…';
+    clearTimeout(S.epTimer[pid]); S.epTimer[pid] = setTimeout(() => flushEp(pid), 1400);
+  }
+});
+document.addEventListener('focusout', e => { const t = e.target; if(t.dataset && t.dataset.inp === 'ep' && S.pid && S.epTimer[S.pid]) flushEp(S.pid); });
+document.addEventListener('toggle', e => { const d = e.target; if(d.dataset && d.dataset.key){ if(d.open) S.open.add(d.dataset.key); else S.open.delete(d.dataset.key); } }, true);
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && !$('#sheet').hidden) closeSheet(); });
+window.addEventListener('pagehide', () => { for(const pid of Object.keys(S.epTimer)) if(S.epTimer[pid]) flushEp(pid); });
+
+/* ---------- boot ---------- */
+function fillLists(){
+  $('#dl-meds').innerHTML = MEDS.map(m => `<option value="${esc(m)}">`).join('');
+  $('#dl-freq').innerHTML = FREQS.map(m => `<option value="${esc(m)}">`).join('');
+  $('#dl-from').innerHTML = FROM.map(m => `<option value="${esc(m)}">`).join('');
+}
+async function refreshNames(){
+  if(!S.user) return;
+  const ids = new Set();
+  for(const p of allPatients()){
+    for(const m of (p.meds||[])) for(const g of (m.given||[])) if(g.by) ids.add(g.by);
+    for(const k of ['notes','vitals','treatments']) for(const x of (p[k]||[])) if(x.by) ids.add(x.by);
+  }
+  const need = [...ids].filter(id => !(id in S.names)); if(!need.length) return;
+  try {
+    const ps = await S.user.profiles(need); let changed = false;
+    for(const id of need){ const n = (ps[id] && ps[id].name) || ''; S.names[id] = n; if(n) changed = true; }
+    if(changed) render();
+  } catch { }
+}
+async function init(){
+  fillLists(); route(); render();
+  setInterval(() => { if($('#sheet').hidden) render(); }, 60000);
+  if(!(window.claude && typeof window.claude.use === 'function')){ S.sync = 'none'; render(); return; }
+  const [db, user, downloads] = await Promise.all([window.claude.use('db'), window.claude.use('user'), window.claude.use('downloads')]);
+  S.downloads = downloads; S.user = user;
+  if(user){
+    try { const me = await user.me(); S.me = {id:me.id, name:me.name || ''}; } catch { }
+    try { const c = await user.can('data.write'); S.canWrite = c !== false; } catch { }
+    try { S.isOwner = await user.isOwner(); } catch { }
+  }
+  document.body.classList.toggle('ro', !S.canWrite);
+  if(!db){ S.sync = 'none'; render(); return; }
+  S.db = db;
+  db.collection('patients').onSnapshot(snap => {
+    const m = new Map(); for(const d of snap.docs){ const data = d.data(); if(data) m.set(d.id, Object.assign({}, data, {id:d.id})); }
+    S.patients = m;
+    if(m.size && S.noAccess){ S.noAccess = false; document.body.classList.toggle('ro', !S.canWrite); }
+    for(const [id,o] of Object.entries(S.overlay)){
+      const d = m.get(id);
+      if(o === null){ if(!d) delete S.overlay[id]; }
+      else if(d && (d.updatedAt||'') >= (o.updatedAt||'')) delete S.overlay[id];
+    }
+    S.loaded = true; S.sync = 'ok';
+    render(); refreshNames();
+  }, err => { S.sync = 'err'; render(); toast(errText(err), 'err'); });
+  db.doc('settings/main').onSnapshot(s => {
+    if(s.exists){ S.settings = Object.assign({}, S.settings, s.data()); S.noAccess = false; }
+    else if(!S.isOwner && !(s.metadata && s.metadata.fromCache) && !S.patients.size) S.noAccess = true;
+    document.body.classList.toggle('ro', !S.canWrite || S.noAccess);
+    render();
+  }, () => { });
+}
+init();
+})();
+</script>
+
+</body></html>
